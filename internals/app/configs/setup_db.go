@@ -3,7 +3,7 @@ package configs
 import (
 	"log"
 
-	"github.com/Erodot0/gym-memeber-management/internals/app/domains/enteties"
+	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -22,10 +22,10 @@ func InitializeSQLite() (*gorm.DB, error) {
 
 	// Auto Migrate will create the tables
 	if err = DB.AutoMigrate(
-		&enteties.Member{},
-		&enteties.Contacts{},
-		&enteties.Address{},
-		&enteties.Subscription{},
+		&entities.Member{},
+		&entities.Contacts{},
+		&entities.Address{},
+		&entities.Subscription{},
 	); err != nil {
 		log.Println(err)
 		return nil, err
