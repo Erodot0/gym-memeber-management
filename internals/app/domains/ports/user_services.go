@@ -1,5 +1,7 @@
 package ports
 
+import "github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
+
 type UserServices interface {
 	// EcnrypPassword generates a hashed password from the input password string using bcrypt.
 	// 
@@ -16,4 +18,11 @@ type UserServices interface {
 	// 
 	// Return type: error.
 	ComparePassword(hashedPassword, password string) error
+	// CreateUser creates a new user in the database.
+	// 
+	// Parameters:
+	//   - user: the user entity to be created.
+	// 
+	// Return type: error.
+	CreateUser(user *entities.User) error
 }
