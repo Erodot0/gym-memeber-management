@@ -44,6 +44,10 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	return h.Http.Success(c, []interface{}{user}, "User created")
 }
 
+// Login handles the login process for a user.
+//
+// It takes a fiber.Ctx parameter `c` representing the HTTP request context.
+// It returns an error indicating whether the login was successful or not.
 func (h *UserHandlers) Login(c *fiber.Ctx) error {
 	user := new(entities.User)
 	if err := h.Parser.ParseData(c, user); err != nil {
