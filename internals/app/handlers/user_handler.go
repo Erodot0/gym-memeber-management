@@ -22,7 +22,10 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 		return h.Http.BadRequest(c, "Error parsing data")
 	}
 
-	//TODO: Validate user
+	//Validate user
+	if err := user.Validate(); err != nil {
+		return h.Http.BadRequest(c, err.Error())
+	}
 
 	// Hash password
 	hashedPassword, err := h.User.EcnrypPassword(user.Password)
