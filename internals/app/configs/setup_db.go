@@ -22,6 +22,7 @@ func InitializeSQLite() (*gorm.DB, error) {
 
 	// Auto Migrate will create the tables
 	if err = DB.AutoMigrate(
+		&entities.User{},
 		&entities.Member{},
 		&entities.Contacts{},
 		&entities.Address{},
