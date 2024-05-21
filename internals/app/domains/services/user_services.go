@@ -31,3 +31,11 @@ func (s *UserServices) CreateUser(user *entities.User) error {
 		Create(user).
 		Error
 }
+
+func (s *UserServices) GetUserByEmail(user *entities.User) error {
+	return s.DB.
+		Model(user).
+		Where("email = ?", user.Email).
+		First(user).
+		Error
+}

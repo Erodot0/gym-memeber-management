@@ -21,4 +21,5 @@ func RegisterUserRoutes(app *fiber.App, db *gorm.DB) {
 	}
 
 	app.Post("/api/v1/users", handler.CreateUser)
+	app.Post("/api/v1/users/login", handler.Login)
 }

@@ -15,9 +15,9 @@ type User struct {
 	Role     string `json:"role" gorm:"not null"`
 }
 
-func (u *User) Validate() error {
+func (u *User) Validate(phase string) error {
 	//Check the role
-	if u.Role != "owner" && u.Role != "admin" {
+	if (u.Role != "owner" && u.Role != "admin" && phase == "register") {
 		return fmt.Errorf("invalid role")
 	}
 

@@ -23,7 +23,7 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	}
 
 	//Validate user
-	if err := user.Validate(); err != nil {
+	if err := user.Validate("register"); err != nil {
 		return h.Http.BadRequest(c, err.Error())
 	}
 
@@ -42,4 +42,33 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	
 	user.RemovePassword()
 	return h.Http.Success(c, []interface{}{user}, "User created")
+}
+
+func (h *UserHandlers) Login(c *fiber.Ctx) error {
+	user := new(entities.User)
+	if err := h.Parser.ParseData(c, user); err != nil {
+		return h.Http.BadRequest(c, "Error parsing data")
+	}
+
+	//Validate user
+	if err := user.Validate("login"); err != nil {
+		return h.Http.BadRequest(c, err.Error())
+	}
+
+	provided_password := user.Password
+	//Search for user
+	if err := h.User.GetUserByEmail(user); err != nil {
+		return h.Http.Unauthorized(c)
+	}
+
+	//Compare Password
+	if err := h.User.ComparePassword(user.Password, provided_password); err != nil {
+		return h.Http.Unauthorized(c)
+	}
+
+	//TODO:Create Session
+	//TODO:Set Cookie
+
+	user.RemovePassword()
+	return h.Http.Success(c, []interface{}{user}, "Login successful")
 }

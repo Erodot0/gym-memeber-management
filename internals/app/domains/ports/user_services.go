@@ -27,4 +27,11 @@ type UserServices interface {
 	// 
 	// Return type: error.
 	CreateUser(user *entities.User) error
+	// GetUserByEmail retrieves a user from the database by their email.
+	// 
+	// Parameters:
+	//   - user: the user entity to be retrieved, it must contain the email.
+	// 
+	// Return type: error.
+	GetUserByEmail(user *entities.User) error
 }
