@@ -21,6 +21,16 @@ func (u *User) Validate() error {
 		return fmt.Errorf("invalid role")
 	}
 
+	//Check the email
+	if u.Email == "" {
+		return fmt.Errorf("email is required")
+	}
+
+	//Check the password
+	if u.Password == "" {
+		return fmt.Errorf("password is required")
+	}
+
 	return nil
 }
 
