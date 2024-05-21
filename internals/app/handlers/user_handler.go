@@ -11,6 +11,7 @@ import (
 type UserHandlers struct {
 	Parser ports.ParserAdapters
 	Http ports.HttpAdapters
+	User ports.UserServices
 }
 
 func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
