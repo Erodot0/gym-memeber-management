@@ -38,12 +38,12 @@ type CacheAdapters interface {
 	// GetCacheFromKey retrieves data from Redis based on the provided CachePort data.
 	//
 	// Parameters:
-	//   - data: the CachePort data used to retrieve data from Redis
+	//   - key: the key to retrieve data from Redis
+	//   - data: the CachePort data used to retrieve the data from Redis
 	//
 	// Returns:
-	//   - []byte: the data retrieved from Redis
 	//   - error: if there was an error retrieving the data from Redis
-	GetCacheFromKey(data CachePort) ([]byte, error)
+	GetCacheFromKey(key string, data CachePort) error
 	// GetCacheFromData retrieves data from Redis.
 	//
 	// Parameters:
