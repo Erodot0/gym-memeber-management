@@ -7,6 +7,8 @@ type UserServices interface {
 	// 
 	// Parameters:
 	//   - password: the password string to be hashed.
+	// 
+	// Return values:
 	//   - string: the hashed password.
 	//   - error: an error if any occurs during the hashing process.
 	EcnrypPassword(password string) (string, error)
