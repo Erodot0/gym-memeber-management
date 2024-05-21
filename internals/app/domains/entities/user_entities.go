@@ -50,8 +50,8 @@ func (u *User) NewSession(c *fiber.Ctx, token string) Session {
 	}
 }
 
-func (u *User) NewAuthCookie(token string) fiber.Cookie {
-	return fiber.Cookie{
+func (u *User) NewAuthCookie(token string) *fiber.Cookie {
+	return &fiber.Cookie{
 		Name:     "Authorization",
 		Value:    token,
 		Expires:  time.Now().Add(10 * time.Hour), // 10 hours session
