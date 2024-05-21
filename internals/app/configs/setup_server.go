@@ -14,7 +14,7 @@ func Initialize(db *gorm.DB) {
 
 	newFiberLimiter(app)
 
-	routes.RegisterUserRoutes(app)
+	routes.RegisterUserRoutes(app, db)
 
 	if err := app.Listen(":" + os.Getenv("SERVER_PORT")); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
