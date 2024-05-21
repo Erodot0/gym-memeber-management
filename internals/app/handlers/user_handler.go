@@ -70,8 +70,10 @@ func (h *UserHandlers) Login(c *fiber.Ctx) error {
 		return h.Http.Unauthorized(c)
 	}
 
-	//TODO:Create Session
-	//TODO:Set Cookie
+	//Create Session
+	if err := h.User.SetSession(c, user); err != nil {
+		return h.Http.InternalServerError(c, "Error creating session")
+	}
 
 	user.RemovePassword()
 	return h.Http.Success(c, []interface{}{user}, "Login successful")
