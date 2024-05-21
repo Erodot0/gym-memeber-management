@@ -17,6 +17,12 @@ func main() {
 		panic("Failed to initialize database: " + err.Error())
 	}
 
+	// Initialize redis
+	redis, err := configs.InitializeRedisClient()
+	if err != nil {
+		panic("Failed to initialize redis: " + err.Error())
+	}
+	
 	// Initialize server
-	configs.Initialize(db)
+	configs.Initialize(db, redis)
 }
