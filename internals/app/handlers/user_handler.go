@@ -20,5 +20,7 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	}
 
 	fmt.Println(user)
+
+	user.RemovePassword()
 	return h.Http.Success(c, user, "User created")
 }
