@@ -4,12 +4,16 @@ import (
 	"log"
 
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
+	"github.com/Erodot0/gym-memeber-management/internals/app/domains/ports"
+	"github.com/Erodot0/gym-memeber-management/internals/app/tools/utils"
+	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type UserServices struct {
 	DB *gorm.DB
+	Cache ports.CacheAdapters
 }
 
 func (s *UserServices) EcnrypPassword(password string) (string, error) {
@@ -38,4 +42,25 @@ func (s *UserServices) GetUserByEmail(user *entities.User) error {
 		Where("email = ?", user.Email).
 		First(user).
 		Error
+}
+
+func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
+	//Generate random token
+	token, err := utils.GenerateRandomToken(32)
+	if err != nil {
+		return err
+	}
+
+	//Create session
+	session := user.NewSession(c, token)
+
+	//Set session in cache
+	if err := s.Cache.SetCache(&session); err != nil {
+		return err
+	}
+
+	//Set cookie
+	c.Cookie(user.NewAuthCookie(token))
+
+	return nil
 }
