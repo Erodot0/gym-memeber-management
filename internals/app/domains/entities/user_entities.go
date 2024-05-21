@@ -2,7 +2,9 @@ package entities
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
@@ -36,4 +38,26 @@ func (u *User) Validate(phase string) error {
 
 func (u *User) RemovePassword() {
 	u.Password = ""
+}
+
+func (u *User) NewSession(c *fiber.Ctx, token string) Session {
+	return Session{
+		Token:  token,
+		UserID: u.ID,
+		IPAddress: c.IP(),
+		UserAgent: c.Get("user-agent"),
+		Expires:  10 * time.Hour, // 10 hours session
+	}
+}
+
+func (u *User) NewAuthCookie(token string) fiber.Cookie {
+	return fiber.Cookie{
+		Name:     "Authorization",
+		Value:    token,
+		Expires:  time.Now().Add(10 * time.Hour), // 10 hours session
+		HTTPOnly: true,
+		Secure:   true,
+		SameSite: fiber.CookieSameSiteStrictMode,
+		Path:     "/",
+	}
 }
