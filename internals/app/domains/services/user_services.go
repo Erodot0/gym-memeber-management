@@ -37,6 +37,14 @@ func (s *UserServices) CreateUser(user *entities.User) error {
 		Error
 }
 
+func (s *UserServices) GetUserById(u *entities.User) error {
+	return s.DB.
+		Model(u).
+		Where("id = ?", u.ID).
+		First(u).
+		Error
+}
+
 func (s *UserServices) GetUserByEmail(user *entities.User) error {
 	return s.DB.
 		Model(user).

@@ -30,6 +30,14 @@ type UserServices interface {
 	//
 	// Return type: error.
 	CreateUser(user *entities.User) error
+	// GetUserById retrieves a user from the database by their ID.
+	//
+	// Parameters:
+	//   - u: a pointer to a User entity, which should have the ID field set to the desired user's ID.
+	//
+	// Return type: error. If the user is found, the User entity will be populated with the user's data.
+	//               If the user is not found, an error will be returned.
+	GetUserById(u *entities.User) error
 	// GetUserByEmail retrieves a user from the database by their email.
 	//
 	// Parameters:
@@ -53,6 +61,5 @@ type UserServices interface {
 	// Returns:
 	//   - *entities.Session: the session with the given token, or nil if not found.
 	//   - error: an error if the retrieval process encounters any issues.
-	//
 	GetSessionByToken(token string) (*entities.Session, error)
 }
