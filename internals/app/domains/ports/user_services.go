@@ -45,5 +45,14 @@ type UserServices interface {
 	//
 	// Return type: error.
 	SetSession(c *fiber.Ctx, user *entities.User) error
+	// GetSessionByToken retrieves a session from the database by its token.
+	//
+	// Parameters:
+	//   - token: the token of the session to retrieve.
+	//
+	// Returns:
+	//   - *entities.Session: the session with the given token, or nil if not found.
+	//   - error: an error if the retrieval process encounters any issues.
+	//
 	GetSessionByToken(token string) (*entities.Session, error)
 }
