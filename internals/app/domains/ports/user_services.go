@@ -45,4 +45,5 @@ type UserServices interface {
 	//
 	// Return type: error.
 	SetSession(c *fiber.Ctx, user *entities.User) error
+	GetSessionByToken(token string) (*entities.Session, error)
 }

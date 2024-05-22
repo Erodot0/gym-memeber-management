@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
@@ -63,4 +64,32 @@ func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
 	c.Cookie(user.NewAuthCookie(token))
 
 	return nil
+}
+
+func (u *UserServices) GetSessionByToken(token string) (*entities.Session, error) {
+	// Create session
+	session := &entities.Session{
+		Token: token,
+	}
+
+	// Get all keys for the token
+	keys, err := u.Cache.GetCacheKeys(session)
+	if err != nil {
+		log.Printf("@GetUserSessionByToken: Error getting keys: %v", err)
+		return nil, err
+	}
+
+	// Check if 1 key is found, 1 to void multiple keys
+	if len(keys) != 1 {
+		log.Printf("@GetUserSessionByToken: No key or multiple keys found for pattern")
+		return nil, fmt.Errorf("no key or multiple keys found for pattern")
+	}
+
+	// Get the session from Redis with key
+	if err := u.Cache.GetCacheFromKey(keys[0], session); err != nil {
+		log.Printf("@GetUserSessionByToken: Error getting session: %v", err)
+		return nil, err
+	}
+
+	return session, nil
 }
