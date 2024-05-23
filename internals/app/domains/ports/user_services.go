@@ -70,4 +70,12 @@ type UserServices interface {
 	//
 	// Return type: error.
 	DeleteSession(c *fiber.Ctx, id uint) error
+	// DeleteAllSessions deletes all user sessions from the database by its ID.
+	//
+	// Parameters:
+	//   - c: the fiber.Ctx object representing the HTTP request context.
+	//   - id: the ID of the user whose sessions are to be deleted.
+	//
+	// Return type: error.
+	DeleteAllSessions(c *fiber.Ctx, id uint) error
 }

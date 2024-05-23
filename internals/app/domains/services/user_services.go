@@ -120,3 +120,20 @@ func (u *UserServices) DeleteSession(c *fiber.Ctx, id uint) error {
 	c.ClearCookie("Authorization")
 	return nil
 }
+
+func (u *UserServices) DeleteAllSessions(c *fiber.Ctx, id uint) error {
+	// Create session
+	session := entities.Session{
+		UserID: id,
+	}
+
+	// Delete the sessions from Redis
+	if err := u.Cache.DelCacheMultiple(&session); err != nil {
+		log.Printf("@DeleteAllSessions: Error removing session: %v", err)
+		return err
+	}
+
+	// Clear the cookie
+	c.ClearCookie("Authorization")
+	return nil
+}
