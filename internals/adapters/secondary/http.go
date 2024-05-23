@@ -9,11 +9,11 @@ type HttpServices struct{}
 type Response struct {
 	Success bool          `json:"success"`
 	Message string        `json:"message"`
-	Data    []interface{} `json:"data,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 // 200 OK
-func (h *HttpServices) Success(c *fiber.Ctx, data []interface{}, message string) error {
+func (h *HttpServices) Success(c *fiber.Ctx, data interface{}, message string) error {
 	return c.Status(fiber.StatusOK).JSON(Response{
 		Success: true,
 		Data:    data,
