@@ -7,9 +7,9 @@ import (
 type HttpServices struct{}
 
 type Response struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Success bool          `json:"success"`
+	Message string        `json:"message"`
+	Data    []interface{} `json:"data,omitempty"`
 }
 
 // 200 OK
