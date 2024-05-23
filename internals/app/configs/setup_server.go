@@ -15,7 +15,13 @@ func Initialize(db *gorm.DB, redis *redis.Client) {
 
 	newFiberLimiter(app)
 
-	routes.RegisterUserRoutes(app, db, redis)
+	routes := &routes.Routes{
+		App:   app,
+		DB:    db,
+		Cache: redis,
+	}
+
+	routes.RegisterUserRoutes()
 
 	if err := app.Listen(":" + os.Getenv("SERVER_PORT")); err != nil {
 		log.Fatalf("Server failed to start: %v", err)

@@ -6,16 +6,13 @@ import (
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/services"
 	"github.com/Erodot0/gym-memeber-management/internals/app/handlers"
 	"github.com/Erodot0/gym-memeber-management/internals/app/tools/middlewares"
-	"github.com/go-redis/redis/v8"
-	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 )
 
-func RegisterUserRoutes(app *fiber.App, db *gorm.DB, redis *redis.Client) {
+func(r *Routes) RegisterUserRoutes() {
 	userServices := services.UserServices{
-		DB: db,
+		DB: r.DB,
 		Cache: &secondary.CacheServices{
-			CacheClient: redis,
+			CacheClient: r.Cache,
 		},
 	}
 
@@ -30,7 +27,7 @@ func RegisterUserRoutes(app *fiber.App, db *gorm.DB, redis *redis.Client) {
 		Http:        &secondary.HttpServices{},
 	}
 
-	app.Post("/api/v1/users", userHandler.CreateUser)
-	app.Post("/api/v1/users/login", userHandler.Login)
-	app.Post("/api/v1/users/logout", userMiddleware.AuthorizeUser, userHandler.Logout)
+	r.App.Post("/api/v1/users", userHandler.CreateUser)
+	r.App.Post("/api/v1/users/login", userHandler.Login)
+	r.App.Post("/api/v1/users/logout", userMiddleware.AuthorizeUser, userHandler.Logout)
 }
