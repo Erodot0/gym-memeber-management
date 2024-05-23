@@ -62,4 +62,12 @@ type UserServices interface {
 	//   - *entities.Session: the session with the given token, or nil if not found.
 	//   - error: an error if the retrieval process encounters any issues.
 	GetSessionByToken(token string) (*entities.Session, error)
+	// DeleteSession deletes a user session from the database by its ID.
+	//
+	// Parameters:
+	//   - c: the fiber.Ctx object representing the HTTP request context.
+	//   - id: the ID of the session to be deleted.
+	//
+	// Return type: error.
+	DeleteSession(c *fiber.Ctx, id uint) error
 }

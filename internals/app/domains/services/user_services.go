@@ -101,3 +101,22 @@ func (u *UserServices) GetSessionByToken(token string) (*entities.Session, error
 
 	return session, nil
 }
+
+func (u *UserServices) DeleteSession(c *fiber.Ctx, id uint) error {
+	// Get authorization token and create session
+	token := c.Cookies("Authorization")
+	session := entities.Session{
+		Token:  token,
+		UserID: id,
+	}
+
+	// Remove the session from Redis
+	if err := u.Cache.DelCache(&session); err != nil {
+		log.Printf("@DeleteSession: Error removing session: %v", err)
+		return err
+	}
+
+	// Clear the cookie
+	c.ClearCookie("Authorization")
+	return nil
+}
