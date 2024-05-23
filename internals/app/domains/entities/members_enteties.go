@@ -12,9 +12,9 @@ type Member struct {
 	Surname      string         `json:"surname" gorm:"not null,required"`
 	Gender       string         `json:"gender"`
 	DateOfBirth  time.Time      `json:"date_of_birth" gorm:"not null,required"`
-	Contacts     *Contacts      `json:"contacts,omitempty" gorm:"foreignKey:ID"`
-	Address      *Address       `json:"address,omitempty" gorm:"foreignKey:ID"`
-	Subscription []Subscription `json:"subscription,omitempty" gorm:"foreignKey:ID"`
+	Contacts     *Contacts      `json:"contacts" gorm:"foreignKey:ID"`
+	Address      *Address       `json:"address" gorm:"foreignKey:ID"`
+	Subscription []Subscription `json:"subscription" gorm:"foreignKey:ID"`
 }
 
 type Contacts struct {
