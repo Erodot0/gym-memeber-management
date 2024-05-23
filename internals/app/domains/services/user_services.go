@@ -141,7 +141,5 @@ func (u *UserServices) DeleteAllSessions(c *fiber.Ctx, id uint) error {
 		return err
 	}
 
-	// Clear the cookie
-	c.ClearCookie("Authorization")
 	return nil
 }
