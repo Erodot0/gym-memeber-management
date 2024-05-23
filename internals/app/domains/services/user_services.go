@@ -37,6 +37,14 @@ func (s *UserServices) CreateUser(user *entities.User) error {
 		Error
 }
 
+func (s *UserServices) DeleteUser(u *entities.User) error {
+	return s.DB.
+		Model(u).
+		Where("id = ?", u.ID).
+		Delete(u).
+		Error
+}
+
 func (s *UserServices) GetUserById(u *entities.User) error {
 	return s.DB.
 		Model(u).

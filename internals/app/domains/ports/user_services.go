@@ -30,6 +30,13 @@ type UserServices interface {
 	//
 	// Return type: error.
 	CreateUser(user *entities.User) error
+	// DeleteUser deletes a user from the database.
+	//
+	// Parameters:
+	//   - u: the user entity to be deleted.
+	//
+	// Return type: error.
+	DeleteUser(u *entities.User) error
 	// GetUserById retrieves a user from the database by their ID.
 	//
 	// Parameters:
