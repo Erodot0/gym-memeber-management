@@ -63,5 +63,10 @@ func (c *CacheServices) DelCacheMultiple(data ports.CachePort) error {
 		return err
 	}
 
+	// if no key is found
+	if len(key) == 0 {
+		return nil
+	}
+	
 	return c.CacheClient.Del(c.CacheClient.Context(), key...).Err()
 }
