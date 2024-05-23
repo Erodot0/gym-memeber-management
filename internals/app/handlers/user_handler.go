@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/ports"
+	"github.com/Erodot0/gym-memeber-management/internals/app/tools/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -77,4 +78,18 @@ func (h *UserHandlers) Login(c *fiber.Ctx) error {
 
 	user.RemovePassword()
 	return h.Http.Success(c, []interface{}{user}, "Login successful")
+}
+
+// Logout handles the logout process for a user.
+//
+// It takes a fiber.Ctx parameter `c` representing the HTTP request context.
+// It returns an error indicating whether the logout was successful or not.
+func (h *UserHandlers) Logout(c *fiber.Ctx) error {
+	user := utils.GetLocalUser(c)
+
+	if err := h.User.DeleteSession(c, user.ID); err != nil {
+		return h.Http.InternalServerError(c, "Error deleting session")
+	}
+
+	return  h.Http.Success(c, nil, "Logout successful")
 }
