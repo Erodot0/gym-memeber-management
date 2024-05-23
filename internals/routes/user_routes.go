@@ -8,7 +8,7 @@ import (
 	"github.com/Erodot0/gym-memeber-management/internals/app/tools/middlewares"
 )
 
-func(r *Routes) RegisterUserRoutes() {
+func (r *Routes) RegisterUserRoutes() {
 	userServices := services.UserServices{
 		DB: r.DB,
 		Cache: &secondary.CacheServices{
@@ -27,7 +27,8 @@ func(r *Routes) RegisterUserRoutes() {
 		Http:        &secondary.HttpServices{},
 	}
 
-	r.App.Post("/api/v1/users", userHandler.CreateUser)
+	r.App.Post("/api/v1/users", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, userHandler.CreateUser)
 	r.App.Post("/api/v1/users/login", userHandler.Login)
 	r.App.Post("/api/v1/users/logout", userMiddleware.AuthorizeUser, userHandler.Logout)
+	r.App.Delete("/api/v1/users/:id", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, userHandler.DeleteUser)
 }
