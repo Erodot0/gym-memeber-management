@@ -37,6 +37,12 @@ type UserServices interface {
 	//
 	// Return type: error.
 	DeleteUser(u *entities.User) error
+	// GetAllUsers retrieves all users from the database.
+	//
+	// Return type:
+	//   - []entities.User
+	//
+	GetAllUsers() ([]entities.User, error)
 	// GetUserById retrieves a user from the database by their ID.
 	//
 	// Parameters:

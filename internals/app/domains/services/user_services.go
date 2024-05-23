@@ -13,7 +13,7 @@ import (
 )
 
 type UserServices struct {
-	DB *gorm.DB
+	DB    *gorm.DB
 	Cache ports.CacheAdapters
 }
 
@@ -42,6 +42,15 @@ func (s *UserServices) DeleteUser(u *entities.User) error {
 		Model(u).
 		Where("id = ?", u.ID).
 		Delete(u).
+		Error
+}
+
+func (s *UserServices) GetAllUsers() ([]entities.User, error) {
+	var users []entities.User
+	return users, s.DB.
+		Model(&users).
+		Select("ID", "name", "surname", "email", "created_at", "role").
+		Find(&users).
 		Error
 }
 
