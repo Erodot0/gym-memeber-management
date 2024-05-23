@@ -96,6 +96,18 @@ func (h *UserHandlers) Logout(c *fiber.Ctx) error {
 	return h.Http.Success(c, nil, "Logout successful")
 }
 
+// GetUsers handles the retrieval of all users.
+//
+// It takes a fiber.Ctx parameter `c` representing the HTTP request context.
+// It returns an error indicating whether the retrieval was successful or not.
+func (u *UserHandlers) GetUsers(c *fiber.Ctx) error {
+	users, err := u.User.GetAllUsers()
+	if err != nil {
+		return u.Http.InternalServerError(c, err.Error())
+	}
+	return u.Http.Success(c, users, "Users retrieved")
+}
+
 // DeleteUser handles the deletion of a user.
 //
 // It takes a fiber.Ctx parameter `c` representing the HTTP request context.
