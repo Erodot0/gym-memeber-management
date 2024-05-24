@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -28,7 +29,6 @@ type Address struct {
 	Country string `json:"country"`
 	City    string `json:"city"`
 	Street  string `json:"street"`
-	Number  string `json:"number"`
 }
 
 type Subscription struct {
@@ -37,5 +37,59 @@ type Subscription struct {
 	StartDate time.Time `json:"start_date"`
 	EndDate   time.Time `json:"end_date"`
 	IsActive  *bool     `json:"is_active"`
-	Price     int       `json:"price"`
+	Price     float32   `json:"price"`
+}
+
+func (m *Member) Validate() error {
+	if m.Name == "" ||
+		m.Surname == "" ||
+		m.Gender == "" ||
+		m.DateOfBirth.IsZero() ||
+		m.Contacts == nil ||
+		m.Address == nil ||
+		len(m.Subscription) == 0 {
+		return fmt.Errorf("compilare i campi obbligatori")
+	}
+
+	if err := m.Contacts.Validate(); err != nil {
+		return err
+	}
+
+	if err := m.Address.Validate(); err != nil {
+		return err
+	}
+
+	if err := m.Subscription[0].Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Contacts) Validate() error {
+	if c.Phone == "" {
+		return fmt.Errorf("compilare il numero di telefono")
+	}
+	return nil
+}
+
+func (a *Address) Validate() error {
+	if a.Country == "" || a.City == "" || a.Street == "" {
+		return fmt.Errorf("l'indirizzo deve avere tutti i campi obbligatori")
+	}
+	return nil
+}
+
+func (s *Subscription) Validate() error {
+	validTypes := map[string]bool{
+		"mensile":     true,
+		"trimestrale": true,
+		"semestrale":  true,
+		"annuale":     true,
+	}
+
+	if !validTypes[s.Type] || s.StartDate.IsZero() || s.Price == 0 || s.Price < 0 || s.IsActive == nil {
+		return fmt.Errorf("compilare i campi d'abbonamento correttamente")
+	}
+	return nil
 }
