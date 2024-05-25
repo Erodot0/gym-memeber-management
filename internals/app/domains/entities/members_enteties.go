@@ -19,26 +19,47 @@ type Member struct {
 }
 
 type Contacts struct {
-	ID    uint   `json:"-" gorm:"primaryKey;autoIncrement;unique;not null"`
+	ID    uint   `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
 	Phone string `json:"phone"`
 	Email string `json:"email"`
 }
 
 type Address struct {
-	ID      uint   `json:"-" gorm:"primaryKey;autoIncrement;unique;not null"`
+	ID      uint   `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
 	Country string `json:"country"`
 	City    string `json:"city"`
 	Street  string `json:"street"`
 }
 
 type Subscription struct {
-	ID        uint      `json:"-" gorm:"primaryKey;autoIncrement;unique;not null"`
+	ID        uint      `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
 	UserID    uint      `json:"user_id"`
 	Type      string    `json:"type"`
 	StartDate time.Time `json:"start_date"`
 	EndDate   time.Time `json:"end_date"`
 	IsActive  *bool     `json:"is_active"`
 	Price     float32   `json:"price"`
+}
+
+func (s *Subscription) AddEndDate() {
+	if s.Type == "mensile" {
+		s.EndDate = time.Now().AddDate(0, 1, 0)
+	}
+
+	if s.Type == "trimestrale" {
+		s.EndDate = time.Now().AddDate(0, 3, 0)
+	}
+
+	if s.Type == "semestrale" {
+		s.EndDate = time.Now().AddDate(0, 6, 0)
+	}
+
+	if s.Type == "annuale" {
+		s.EndDate = time.Now().AddDate(1, 0, 0)
+	}
+
+	// Activate subscription
+	*s.IsActive = true
 }
 
 func (m *Member) Validate() error {
