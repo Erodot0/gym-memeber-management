@@ -15,7 +15,7 @@ type Member struct {
 	DateOfBirth  time.Time      `json:"date_of_birth" gorm:"not null,required"`
 	Contacts     *Contacts      `json:"contacts" gorm:"foreignKey:ID"`
 	Address      *Address       `json:"address" gorm:"foreignKey:ID"`
-	Subscription []Subscription `json:"subscription" gorm:"foreignKey:ID"`
+	Subscription []Subscription `json:"subscription" gorm:"foreignKey:UserID"`
 }
 
 type Contacts struct {
@@ -33,6 +33,7 @@ type Address struct {
 
 type Subscription struct {
 	ID        uint      `json:"-" gorm:"primaryKey;autoIncrement;unique;not null"`
+	UserID    uint      `json:"user_id"`
 	Type      string    `json:"type"`
 	StartDate time.Time `json:"start_date"`
 	EndDate   time.Time `json:"end_date"`
