@@ -8,7 +8,7 @@ import (
 	"github.com/Erodot0/gym-memeber-management/internals/app/tools/middlewares"
 )
 
-func (r *Routes) RegisterUserRoutes() {
+func (r *Routes) RegisterMemberRoutes() {
 	userServices := services.UserServices{
 		DB: r.DB,
 		Cache: &secondary.CacheServices{
@@ -16,10 +16,14 @@ func (r *Routes) RegisterUserRoutes() {
 		},
 	}
 
-	userHandler := handlers.UserHandlers{
-		Parser: &primary.ErrorHandler{},
-		Http:   &secondary.HttpServices{},
-		Services:   &userServices,
+	memberServices := services.MemberServices{
+		DB: r.DB,
+	}
+
+	memberHandler := handlers.MembersHandlers{
+		Parser:   &primary.ErrorHandler{},
+		Http:     &secondary.HttpServices{},
+		Services:   &memberServices,
 	}
 
 	userMiddleware := middlewares.UserMiddlewares{
@@ -27,9 +31,5 @@ func (r *Routes) RegisterUserRoutes() {
 		Http:        &secondary.HttpServices{},
 	}
 
-	r.App.Post("/api/v1/users", /*userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner,*/ userHandler.CreateUser)
-	r.App.Post("/api/v1/users/login", userHandler.Login)
-	r.App.Post("/api/v1/users/logout", userMiddleware.AuthorizeUser, userHandler.Logout)
-	r.App.Get("/api/v1/users", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, userHandler.GetUsers)
-	r.App.Delete("/api/v1/users/:id", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, userHandler.DeleteUser)
+	r.App.Post("/api/v1/members", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, memberHandler.CreateMember)
 }
