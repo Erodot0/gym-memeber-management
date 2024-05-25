@@ -20,7 +20,7 @@ type UserHandlers struct {
 func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	user := new(entities.User)
 	if err := h.Parser.ParseData(c, user); err != nil {
-		return h.Http.BadRequest(c, "Error parsing data")
+		return h.Http.BadRequest(c, "Errore nella gestione dei dati")
 	}
 
 	//Validate user
@@ -51,7 +51,7 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 func (h *UserHandlers) Login(c *fiber.Ctx) error {
 	user := new(entities.User)
 	if err := h.Parser.ParseData(c, user); err != nil {
-		return h.Http.BadRequest(c, "Error parsing data")
+		return h.Http.BadRequest(c, "Errore nella gestione dei dati")
 	}
 
 	//Validate user
