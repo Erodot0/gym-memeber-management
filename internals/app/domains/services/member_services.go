@@ -22,3 +22,16 @@ func (m *MemberServices) CreateMember(member *entities.Member) error {
 
 	return nil
 }
+
+func (m *MemberServices) GetAllMembers() ([]entities.Member, error) {
+	var members []entities.Member
+	if err := m.DB.
+		Preload("Contacts").
+		Preload("Address").
+		Preload("Subscription", "is_active = true").
+		Find(&members).
+		Error; err != nil {
+		return nil, err
+	}
+	return members, nil
+}
