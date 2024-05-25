@@ -33,3 +33,12 @@ func (h *MembersHandlers) CreateMember(c *fiber.Ctx) error {
 
 	return h.Http.Success(c, []interface{}{member}, "Membro aggiunto!")
 }
+
+func (h *MembersHandlers) GetMembers(c *fiber.Ctx) error {
+	members, err := h.Services.GetAllMembers()
+	if err != nil {
+		return h.Http.InternalServerError(c, "Errore nel recuperare i membri")
+	}
+
+	return h.Http.Success(c, members, "Membri recuperati")
+}

@@ -32,4 +32,5 @@ func (r *Routes) RegisterMemberRoutes() {
 	}
 
 	r.App.Post("/api/v1/members", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, memberHandler.CreateMember)
+	r.App.Get("/api/v1/members", userMiddleware.AuthorizeUser, memberHandler.GetMembers)
 }
