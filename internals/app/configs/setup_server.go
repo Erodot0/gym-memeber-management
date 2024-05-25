@@ -21,6 +21,7 @@ func Initialize(db *gorm.DB, redis *redis.Client) {
 		Cache: redis,
 	}
 
+	routes.RegisterMemberRoutes()
 	routes.RegisterUserRoutes()
 
 	if err := app.Listen(":" + os.Getenv("SERVER_PORT")); err != nil {
