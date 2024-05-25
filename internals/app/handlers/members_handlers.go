@@ -23,6 +23,9 @@ func (h *MembersHandlers) CreateMember(c *fiber.Ctx) error {
 		return h.Http.BadRequest(c, err.Error())
 	}
 
+	// Add ending date
+	member.Subscription[0].AddEndDate()
+
 	// Create member
 	if err := h.Services.CreateMember(member); err != nil {
 		return h.Http.InternalServerError(c, "Errore nel creare il membro")
