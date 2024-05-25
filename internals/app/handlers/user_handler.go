@@ -8,9 +8,9 @@ import (
 )
 
 type UserHandlers struct {
-	Parser ports.ParserAdapters
-	Http   ports.HttpAdapters
-	User   ports.UserServices
+	Parser   ports.ParserAdapters
+	Http     ports.HttpAdapters
+	Services ports.UserServices
 }
 
 // CreateUser handles the creation of a new user.
@@ -29,14 +29,14 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	}
 
 	// Hash password
-	hashedPassword, err := h.User.EcnrypPassword(user.Password)
+	hashedPassword, err := h.Services.EcnrypPassword(user.Password)
 	if err != nil {
 		return h.Http.InternalServerError(c, "Error hashing password")
 	}
 	user.Password = hashedPassword
 
 	// Create user
-	if err := h.User.CreateUser(user); err != nil {
+	if err := h.Services.CreateUser(user); err != nil {
 		return h.Http.InternalServerError(c, "Error creating user")
 	}
 
@@ -61,17 +61,17 @@ func (h *UserHandlers) Login(c *fiber.Ctx) error {
 
 	provided_password := user.Password
 	//Search for user
-	if err := h.User.GetUserByEmail(user); err != nil {
+	if err := h.Services.GetUserByEmail(user); err != nil {
 		return h.Http.Unauthorized(c)
 	}
 
 	//Compare Password
-	if err := h.User.ComparePassword(user.Password, provided_password); err != nil {
+	if err := h.Services.ComparePassword(user.Password, provided_password); err != nil {
 		return h.Http.Unauthorized(c)
 	}
 
 	//Create Session
-	if err := h.User.SetSession(c, user); err != nil {
+	if err := h.Services.SetSession(c, user); err != nil {
 		return h.Http.InternalServerError(c, "Error creating session")
 	}
 
@@ -86,7 +86,7 @@ func (h *UserHandlers) Login(c *fiber.Ctx) error {
 func (h *UserHandlers) Logout(c *fiber.Ctx) error {
 	user := utils.GetLocalUser(c)
 
-	if err := h.User.DeleteSession(c, user.ID); err != nil {
+	if err := h.Services.DeleteSession(c, user.ID); err != nil {
 		return h.Http.InternalServerError(c, "Error deleting session")
 	}
 
@@ -101,7 +101,7 @@ func (h *UserHandlers) Logout(c *fiber.Ctx) error {
 // It takes a fiber.Ctx parameter `c` representing the HTTP request context.
 // It returns an error indicating whether the retrieval was successful or not.
 func (u *UserHandlers) GetUsers(c *fiber.Ctx) error {
-	users, err := u.User.GetAllUsers()
+	users, err := u.Services.GetAllUsers()
 	if err != nil {
 		return u.Http.InternalServerError(c, err.Error())
 	}
@@ -130,7 +130,7 @@ func (u *UserHandlers) DeleteUser(c *fiber.Ctx) error {
 	user.ID = id
 
 	// Get user
-	if err := u.User.GetUserById(user); err != nil {
+	if err := u.Services.GetUserById(user); err != nil {
 		return u.Http.NotFound(c, "User not found")
 	}
 
@@ -140,12 +140,12 @@ func (u *UserHandlers) DeleteUser(c *fiber.Ctx) error {
 	}
 
 	// Delete user
-	if err := u.User.DeleteUser(user); err != nil {
+	if err := u.Services.DeleteUser(user); err != nil {
 		return u.Http.InternalServerError(c, err.Error())
 	}
 
 	// Remove session
-	if err := u.User.DeleteAllSessions(c, user.ID); err != nil {
+	if err := u.Services.DeleteAllSessions(c, user.ID); err != nil {
 		return u.Http.InternalServerError(c, err.Error())
 	}
 

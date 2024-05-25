@@ -19,7 +19,7 @@ func (r *Routes) RegisterUserRoutes() {
 	userHandler := handlers.UserHandlers{
 		Parser: &primary.ErrorHandler{},
 		Http:   &secondary.HttpServices{},
-		User:   &userServices,
+		Services:   &userServices,
 	}
 
 	userMiddleware := middlewares.UserMiddlewares{
