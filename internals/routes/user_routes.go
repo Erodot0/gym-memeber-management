@@ -27,7 +27,7 @@ func (r *Routes) RegisterUserRoutes() {
 		Http:        &secondary.HttpServices{},
 	}
 
-	r.App.Post("/api/v1/users", /*userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner,*/ userHandler.CreateUser)
+	r.App.Post("/api/v1/users", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, userHandler.CreateUser)
 	r.App.Post("/api/v1/users/login", userHandler.Login)
 	r.App.Post("/api/v1/users/logout", userMiddleware.AuthorizeUser, userHandler.Logout)
 	r.App.Get("/api/v1/users", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, userHandler.GetUsers)
