@@ -12,7 +12,7 @@ type ErrorHandler struct{}
 func (h *ErrorHandler) ParseData(c *fiber.Ctx, target interface{}) error {
 	err := json.Unmarshal(c.Body(), target)
 	if err != nil {
-		log.Println("Error parsing data: ", err)
+		log.Println("Errore nella gestione dei dati: ", err)
 		return err
 	}
 	return nil
