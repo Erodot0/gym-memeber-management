@@ -13,26 +13,29 @@ type Member struct {
 	Surname      string         `json:"surname" gorm:"not null,required"`
 	Gender       string         `json:"gender"`
 	DateOfBirth  time.Time      `json:"date_of_birth" gorm:"not null,required"`
-	Contacts     *Contacts      `json:"contacts" gorm:"foreignKey:ID"`
-	Address      *Address       `json:"address" gorm:"foreignKey:ID"`
-	Subscription []Subscription `json:"subscription" gorm:"foreignKey:UserID"`
+	Contacts     *Contacts      `json:"contacts" gorm:"foreignKey:ID;constraint:OnDelete:CASCADE;"`
+	Address      *Address       `json:"address" gorm:"foreignKey:ID;constraint:OnDelete:CASCADE;"`
+	Subscription []Subscription `json:"subscription" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;"`
 }
 
 type Contacts struct {
-	ID    uint   `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
-	Phone string `json:"phone"`
-	Email string `json:"email"`
+	ID      uint `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
+	Deleted gorm.DeletedAt
+	Phone   string `json:"phone"`
+	Email   string `json:"email"`
 }
 
 type Address struct {
-	ID      uint   `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
+	ID      uint `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
+	Deleted gorm.DeletedAt
 	Country string `json:"country"`
 	City    string `json:"city"`
 	Street  string `json:"street"`
 }
 
 type Subscription struct {
-	ID        uint      `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
+	ID        uint `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
+	Deleted   gorm.DeletedAt
 	UserID    uint      `json:"user_id"`
 	Type      string    `json:"type"`
 	StartDate time.Time `json:"start_date"`
