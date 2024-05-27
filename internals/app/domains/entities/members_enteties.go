@@ -18,6 +18,14 @@ type Member struct {
 	Subscription []Subscription `json:"subscription" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;"`
 }
 
+type UpdateMember struct {
+	ID          uint      `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
+	Name        string    `json:"name"`
+	Surname     string    `json:"surname"`
+	Gender      string    `json:"gender"`
+	DateOfBirth time.Time `json:"date_of_birth"`
+}
+
 type Contacts struct {
 	ID      uint `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
 	Deleted gorm.DeletedAt
