@@ -25,6 +25,13 @@ func (m *MemberServices) CreateMember(member *entities.Member) error {
 	return nil
 }
 
+func (m *MemberServices) UpdateMember(member *entities.UpdateMember) error {
+	return m.DB.
+		Model(entities.Member{}).
+		Where("id = ?", member.ID).
+		Updates(member).Error
+}
+
 func (m *MemberServices) GetAllMembers() ([]entities.Member, error) {
 	var members []entities.Member
 	if err := m.DB.
