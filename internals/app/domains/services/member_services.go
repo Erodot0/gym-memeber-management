@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 	"gorm.io/gorm"
 )
@@ -45,18 +43,19 @@ func (m *MemberServices) GetAllMembers() ([]entities.Member, error) {
 	return members, nil
 }
 
-func (m *MemberServices) GetMemberById(member *entities.Member) error {
+func (m *MemberServices) GetMemberById(id uint) error {
 	return m.DB.
 		Preload("Contacts").
 		Preload("Address").
 		Preload("Subscription", "is_active = true").
-		Where("id = ?", member.ID).
-		First(member).
+		Where("id = ?", id).
+		First(new(entities.Member)).
 		Error
 }
 
-func (m *MemberServices) DeleteMember(member *entities.Member) error {
-	fmt.Println("member: ", member.Name)
+func (m *MemberServices) DeleteMember(id uint) error {
+	member := new(entities.Member)
+	member.ID = id
 	return m.DB.
 		Select("Contacts", "Address", "Subscription").
 		Delete(member).
