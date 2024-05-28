@@ -31,14 +31,15 @@ type MemberServices interface {
 	//   - error: an error if the retrieval process encounters any issues.
 	GetAllMembers() ([]entities.Member, error)
 	// GetMemberById retrieves a member from the database by their ID.
-	// 		Note: only active subscriptions is returned for the member.
+	//
 	// Parameters:
 	//   - id: the ID of the member to be retrieved.
 	//
 	// Return type:
+	//   - entities.Member: the member entity representing the member with the given ID.
 	//   - error: an error if the retrieval process encounters any issues.
 	//
-	GetMemberById(id uint) error
+	GetMemberById(id uint) (entities.Member, error)
 	// DeleteMember deletes a member from the database.
 	//		Note: It deletes the member and its associated entities.
 	// Parameters:

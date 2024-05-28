@@ -43,14 +43,17 @@ func (m *MemberServices) GetAllMembers() ([]entities.Member, error) {
 	return members, nil
 }
 
-func (m *MemberServices) GetMemberById(id uint) error {
-	return m.DB.
+func (m *MemberServices) GetMemberById(id uint) (entities.Member, error) {
+	var member entities.Member
+	if err := m.DB.
 		Preload("Contacts").
 		Preload("Address").
 		Preload("Subscription", "is_active = true").
-		Where("id = ?", id).
-		First(new(entities.Member)).
-		Error
+		First(&member, id).
+		Error; err != nil {
+		return member, err
+	}
+	return member, nil
 }
 
 func (m *MemberServices) DeleteMember(id uint) error {

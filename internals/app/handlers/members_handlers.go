@@ -77,7 +77,8 @@ func (h *MembersHandlers) DeleteMember(c *fiber.Ctx) error {
 	}
 
 	// Get member
-	if err := h.Services.GetMemberById(id); err != nil {
+	_, err = h.Services.GetMemberById(id)
+	if err != nil {
 		return h.Http.NotFound(c, "Membro non trovato")
 	}
 
