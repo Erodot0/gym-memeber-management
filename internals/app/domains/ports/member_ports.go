@@ -31,7 +31,7 @@ type MemberServices interface {
 	//   - error: an error if the retrieval process encounters any issues.
 	GetAllMembers() ([]entities.Member, error)
 	// GetMemberById retrieves a member from the database by their ID.
-	//
+	// 		Note: only active subscriptions is returned for the member.
 	// Parameters:
 	//   - id: the ID of the member to be retrieved.
 	//
