@@ -68,7 +68,6 @@ func (h *MembersHandlers) GetMembers(c *fiber.Ctx) error {
 }
 
 func (h *MembersHandlers) DeleteMember(c *fiber.Ctx) error {
-	member := new(entities.Member)
 	memberId := c.Params("id")
 
 	// conver string to int
@@ -77,12 +76,13 @@ func (h *MembersHandlers) DeleteMember(c *fiber.Ctx) error {
 		return h.Http.BadRequest(c, "id non valido")
 	}
 
-	member.ID = id
-	if err := h.Services.GetMemberById(member); err != nil {
-		return h.Http.NotFound(c, "Membero non trovato")
+	// Get member
+	if err := h.Services.GetMemberById(id); err != nil {
+		return h.Http.NotFound(c, "Membro non trovato")
 	}
 
-	if err := h.Services.DeleteMember(member); err != nil {
+	// Delete member
+	if err := h.Services.DeleteMember(id); err != nil {
 		return h.Http.InternalServerError(c, "Errore nel eliminare il membro")
 	}
 
