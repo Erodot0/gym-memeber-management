@@ -64,3 +64,15 @@ func (m *MemberServices) DeleteMember(id uint) error {
 		Delete(member).
 		Error
 }
+
+func (m *MemberServices) GetAllSubscriptions(id uint) ([]entities.Subscription, error) {
+	var subscriptions []entities.Subscription
+	if err := m.DB.
+		Model(entities.Subscription{}).
+		Where("user_id = ?", id).
+		Find(&subscriptions).
+		Error; err != nil {
+		return nil, err
+	}
+	return subscriptions, nil
+}
