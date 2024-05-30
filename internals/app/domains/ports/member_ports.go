@@ -50,7 +50,6 @@ type MemberServices interface {
 	//
 	DeleteMember(id uint) error
 
-
 	// GetAllSubscriptions retrieves all subscriptions for a given member ID.
 	//
 	// Parameters:
@@ -61,4 +60,15 @@ type MemberServices interface {
 	// - error: an error if the retrieval process encounters any issues.
 	//
 	GetAllSubscriptions(id uint) ([]entities.Subscription, error)
+	// GetMembersBySubscription retrieves all subscriptions for a given member ID and subscription ID.
+	//
+	// Parameters:
+	// - id: the ID of the member.
+	// - sub_id: the ID of the subscription.
+	//
+	// Return type:
+	// - []entities.Subscription: a slice of Subscription entities representing all subscriptions.
+	// - error: an error if the retrieval process encounters any issues.
+	//
+	GetMembersBySubscription(id uint, sub_id uint) ([]entities.Subscription, error)
 }
