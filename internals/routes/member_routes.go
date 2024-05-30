@@ -37,4 +37,7 @@ func (r *Routes) RegisterMemberRoutes() {
 	r.App.Get("/api/v1/members/:id", userMiddleware.AuthorizeUser, memberHandler.GetMemberById)
 	r.App.Put("/api/v1/members/:id", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, memberHandler.UpdateMember)
 	r.App.Delete("/api/v1/members/:id", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, memberHandler.DeleteMember)
+
+	//Subscription
+	r.App.Get("/api/v1/members/:id/subscriptions", userMiddleware.AuthorizeUser, memberHandler.GetMemberSubscriptions)
 }

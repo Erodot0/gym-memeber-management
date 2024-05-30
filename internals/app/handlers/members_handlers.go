@@ -85,7 +85,6 @@ func (h *MembersHandlers) GetMemberById(c *fiber.Ctx) error {
 	return h.Http.Success(c, []interface{}{member}, "Membro recuperato")
 }
 
-
 func (h *MembersHandlers) DeleteMember(c *fiber.Ctx) error {
 	memberId := c.Params("id")
 
@@ -107,4 +106,22 @@ func (h *MembersHandlers) DeleteMember(c *fiber.Ctx) error {
 	}
 
 	return h.Http.Success(c, nil, "Membro eliminato")
+}
+
+func (h *MembersHandlers) GetMemberSubscriptions(c *fiber.Ctx) error {
+	memberId := c.Params("id")
+
+	// conver string to int
+	id, err := utils.StringToUint(memberId)
+	if err != nil {
+		return h.Http.BadRequest(c, "id non valido")
+	}
+
+	// Get subrscriptions
+	subscriptions, err := h.Services.GetAllSubscriptions(id)
+	if err != nil {
+		return h.Http.NotFound(c, "Membros non trovato")
+	}
+
+	return h.Http.Success(c, subscriptions, "Iscrizioni recuperate")
 }
