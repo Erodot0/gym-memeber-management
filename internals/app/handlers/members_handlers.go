@@ -125,3 +125,28 @@ func (h *MembersHandlers) GetMemberSubscriptions(c *fiber.Ctx) error {
 
 	return h.Http.Success(c, subscriptions, "Iscrizioni recuperate")
 }
+
+func (h *MembersHandlers) GetMemberSubscriptionById(c *fiber.Ctx) error {
+	memberId := c.Params("id")
+	subscriptionId := c.Params("sub_id")
+
+	// conver string to int
+	id, err := utils.StringToUint(memberId)
+	if err != nil {
+		return h.Http.BadRequest(c, "id membro non valido")
+	}
+
+	// conver string to int
+	subId, err := utils.StringToUint(subscriptionId)
+	if err != nil {
+		return h.Http.BadRequest(c, "id iscrizione non valido")
+	}
+
+	// Get subrscription
+	subscription, err := h.Services.GetSubscriptionById(id, subId)
+	if err != nil {
+		return h.Http.NotFound(c, "Membro non trovato")
+	}
+
+	return h.Http.Success(c, subscription, "Iscrizione recuperata")
+}

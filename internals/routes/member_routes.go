@@ -40,4 +40,5 @@ func (r *Routes) RegisterMemberRoutes() {
 
 	//Subscription
 	r.App.Get("/api/v1/members/:id/subscriptions", userMiddleware.AuthorizeUser, memberHandler.GetMemberSubscriptions)
+	r.App.Get("/api/v1/members/:id/subscriptions/:sub_id", userMiddleware.AuthorizeUser, memberHandler.GetMemberSubscriptionById)
 }
