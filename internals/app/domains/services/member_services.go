@@ -77,12 +77,12 @@ func (m *MemberServices) GetAllSubscriptions(id uint) ([]entities.Subscription, 
 	return subscriptions, nil
 }
 
-func (m *MemberServices) GetMembersBySubscription(id uint, sub_id uint) ([]entities.Subscription, error) {
+func (m *MemberServices) GetSubscriptionById(id uint, sub_id uint) ([]entities.Subscription, error) {
 	var subscriptions []entities.Subscription
 	if err := m.DB.
 		Model(entities.Subscription{}).
-		Where("user_id = ? AND subscription_id = ?", id, sub_id).
-		Find(&subscriptions).
+		Where("user_id = ? AND id = ?", id, sub_id).
+		First(&subscriptions).
 		Error; err != nil {
 		return nil, err
 	}

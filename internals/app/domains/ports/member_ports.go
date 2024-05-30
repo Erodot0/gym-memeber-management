@@ -70,5 +70,5 @@ type MemberServices interface {
 	// - []entities.Subscription: a slice of Subscription entities representing all subscriptions.
 	// - error: an error if the retrieval process encounters any issues.
 	//
-	GetMembersBySubscription(id uint, sub_id uint) ([]entities.Subscription, error)
+	GetSubscriptionById(id uint, sub_id uint) ([]entities.Subscription, error)
 }
