@@ -53,24 +53,21 @@ type Subscription struct {
 }
 
 func (s *Subscription) AddEndDate() {
-	if s.Type == "mensile" {
-		s.EndDate = time.Now().AddDate(0, 1, 0)
+	switch s.Type {
+	case "mensile":
+		s.EndDate = s.StartDate.AddDate(0, 1, 0)
+	case "trimestrale":
+		s.EndDate = s.StartDate.AddDate(0, 3, 0)
+	case "semestrale":
+		s.EndDate = s.StartDate.AddDate(0, 6, 0)
+	case "annuale":
+		s.EndDate = s.StartDate.AddDate(1, 0, 0)
 	}
 
-	if s.Type == "trimestrale" {
-		s.EndDate = time.Now().AddDate(0, 3, 0)
+	
+	if time.Now().After(s.StartDate) || time.Now().Equal(s.StartDate) {
+		*s.IsActive = true
 	}
-
-	if s.Type == "semestrale" {
-		s.EndDate = time.Now().AddDate(0, 6, 0)
-	}
-
-	if s.Type == "annuale" {
-		s.EndDate = time.Now().AddDate(1, 0, 0)
-	}
-
-	// Activate subscription
-	*s.IsActive = true
 }
 
 func (m *Member) Validate() error {
@@ -119,10 +116,19 @@ func (s *Subscription) Validate() error {
 		"trimestrale": true,
 		"semestrale":  true,
 		"annuale":     true,
+		"custom":      true,
 	}
 
 	if !validTypes[s.Type] || s.StartDate.IsZero() || s.Price == 0 || s.Price < 0 || s.IsActive == nil {
 		return fmt.Errorf("compilare i campi d'abbonamento correttamente")
+	}
+
+	if s.Type == "custom" && s.EndDate.IsZero() {
+		return fmt.Errorf("compilare la data di fine abbonamento")
+	}
+
+	if s.Type == "custom" && s.EndDate.Before(s.StartDate) {
+		return fmt.Errorf("la data di fine abbonamento deve essere successiva alla data di inizio")
 	}
 	return nil
 }
