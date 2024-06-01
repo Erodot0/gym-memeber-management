@@ -32,6 +32,14 @@ func GetLocalSession(c *fiber.Ctx) *entities.Session {
 	return c.Locals("session").(*entities.Session)
 }
 
+// GetLocalMember retrieves the local member from the fiber context.
+//
+// Parameter: c *fiber.Ctx
+// Return type: *entities.Member
+func GetLocalMember(c *fiber.Ctx) *entities.Member {
+	return c.Locals("member").(*entities.Member)
+}
+
 // GetApiParam returns the value of the specified parameter from the API request.
 //
 // Parameters:
