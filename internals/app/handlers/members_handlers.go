@@ -36,26 +36,20 @@ func (h *MembersHandlers) CreateMember(c *fiber.Ctx) error {
 }
 
 func (h *MembersHandlers) UpdateMember(c *fiber.Ctx) error {
-	member := new(entities.UpdateMember)
-	memberId := utils.GetApiParam(c, "id")
-
-	// conver string to int
-	id, err := utils.StringToUint(memberId)
-	if err != nil {
-		return h.Http.BadRequest(c, "id non valido")
-	}
-
-	// parse data
-	if err := h.Parser.ParseData(c, member); err != nil {
+	updatedMember := new(entities.UpdateMember)
+	if err := h.Parser.ParseData(c, updatedMember); err != nil {
 		return h.Http.BadRequest(c, "Errore nella gestione dei dati")
 	}
 
-	member.ID = id
-	if err := h.Services.UpdateMember(member); err != nil {
-		return h.Http.InternalServerError(c, "Errore nel aggiornare il membro")
+	// get member from fiber locals
+	member := utils.GetLocalMember(c)
+
+	// update user
+	if err := h.Services.UpdateMember(member.ID, updatedMember); err != nil {
+		return h.Http.InternalServerError(c, "Errore nell'aggiornare il membro")
 	}
 
-	return h.Http.Success(c, []interface{}{member}, "Membro aggiornato")
+	return h.Http.Success(c, []interface{}{updatedMember}, "Membro aggiornato")
 }
 
 func (h *MembersHandlers) GetMembers(c *fiber.Ctx) error {
