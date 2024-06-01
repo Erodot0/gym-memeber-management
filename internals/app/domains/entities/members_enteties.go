@@ -19,7 +19,6 @@ type Member struct {
 }
 
 type UpdateMember struct {
-	ID          uint      `json:"ID" gorm:"primaryKey;autoIncrement;unique;not null"`
 	Name        string    `json:"name"`
 	Surname     string    `json:"surname"`
 	Gender      string    `json:"gender"`
