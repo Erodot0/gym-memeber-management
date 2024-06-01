@@ -46,5 +46,5 @@ func (r *Routes) RegisterMemberRoutes() {
 
 	//Subscription
 	r.App.Get("/api/v1/members/:id/subscriptions", userMiddleware.AuthorizeUser, memberMiddleware.GetMember, memberHandler.GetMemberSubscriptions)
-	r.App.Get("/api/v1/members/:id/subscriptions/:sub_id", userMiddleware.AuthorizeUser, memberHandler.GetMemberSubscriptionById)
+	r.App.Get("/api/v1/members/:id/subscriptions/:sub_id", userMiddleware.AuthorizeUser, memberMiddleware.GetMember, memberHandler.GetMemberSubscriptionById)
 }
