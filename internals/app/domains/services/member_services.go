@@ -23,10 +23,10 @@ func (m *MemberServices) CreateMember(member *entities.Member) error {
 	return nil
 }
 
-func (m *MemberServices) UpdateMember(member *entities.UpdateMember) error {
+func (m *MemberServices) UpdateMember(id uint, member *entities.UpdateMember) error {
 	return m.DB.
 		Model(entities.Member{}).
-		Where("id = ?", member.ID).
+		Where("id = ?", id).
 		Updates(member).Error
 }
 

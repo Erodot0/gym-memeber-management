@@ -17,12 +17,13 @@ type MemberServices interface {
 	// 		Note: It updates the member only and not its associated entities.
 	//
 	// Parameters:
+	//   - id: the ID of the member to be updated.
 	//   - m: the member entity to be updated.
 	//
 	// Return type:
 	//   - error: an error if the update process encounters any issues.
 	//
-	UpdateMember(m *entities.UpdateMember) error
+	UpdateMember(id uint, m *entities.UpdateMember) error
 	// GetAllMembers retrieves all members from the database.
 	// 		Note: all members are returned regardless of their subscription status.
 	// 		Note: only active subscriptions is returned for each member.
