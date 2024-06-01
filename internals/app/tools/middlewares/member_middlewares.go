@@ -16,14 +16,7 @@ type MemberMiddlewares struct {
 
 func (m *MemberMiddlewares) GetMember(c *fiber.Ctx) error {
 	// Get the user ID from the API local params
-	memberId := utils.GetApiParam(c, "id")
-
-
-	// conver string to int
-	id, err := utils.StringToUint(memberId)
-	if err != nil {
-		return m.Http.BadRequest(c, "id non valido")
-	}
+	id := utils.GetUintParam(c, "id")
 
 	// Retrieve the user from the database
 	member, err := m.Services.GetMemberById(id)
