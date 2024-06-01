@@ -119,15 +119,7 @@ func (u *UserHandlers) GetUsers(c *fiber.Ctx) error {
 // is returned indicating that the user was deleted successfully.
 func (u *UserHandlers) DeleteUser(c *fiber.Ctx) error {
 	user := new(entities.User)
-	userID := utils.GetApiParam(c, "id")
-
-	// conver string to int
-	id, err := utils.StringToUint(userID)
-	if err != nil {
-		return u.Http.BadRequest(c, "Invalid user ID")
-	}
-
-	user.ID = id
+	user.ID = utils.GetUintParam(c, "id")
 
 	// Get user
 	if err := u.Services.GetUserById(user); err != nil {
