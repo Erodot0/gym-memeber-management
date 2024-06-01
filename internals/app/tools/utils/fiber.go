@@ -40,7 +40,7 @@ func GetLocalMember(c *fiber.Ctx) *entities.Member {
 	return c.Locals("member").(*entities.Member)
 }
 
-// GetApiParam returns the value of the specified parameter from the API request.
+// GetStringParam returns the value of the specified parameter from the API request.
 //
 // Parameters:
 //   - c: The fiber.Ctx object representing the current request context.
@@ -48,8 +48,27 @@ func GetLocalMember(c *fiber.Ctx) *entities.Member {
 //
 // Returns:
 //   - string: The value of the specified parameter from the API request.
-func GetApiParam(c *fiber.Ctx, key string) string {
+func GetStringParam(c *fiber.Ctx, key string) string {
 	return c.Params(key)
+}
+
+// GetUintParam returns the value of the specified parameter from the API request.
+//
+// Parameters:
+//   - c: The fiber.Ctx object representing the current request context.
+//   - key: The key of the parameter to retrieve from the request.
+//
+// Returns:
+//   - uint: The value of the specified parameter from the API request.
+func GetUintParam(c *fiber.Ctx, key string) uint {
+	strVal := c.Params(key)
+
+	// convert string to uint
+	uintVal, err := StringToUint(strVal)
+	if err != nil {
+		return 0
+	}
+	return uintVal
 }
 
 // GetBaseURL retrieves the base URL from the fiber context.
