@@ -68,19 +68,8 @@ func (h *MembersHandlers) GetMembers(c *fiber.Ctx) error {
 }
 
 func (h *MembersHandlers) GetMemberById(c *fiber.Ctx) error {
-	memberId := c.Params("id")
-
-	// conver string to int
-	id, err := utils.StringToUint(memberId)
-	if err != nil {
-		return h.Http.BadRequest(c, "id non valido")
-	}
-
-	// Get member
-	member, err := h.Services.GetMemberById(id)
-	if err != nil {
-		return h.Http.NotFound(c, "Membro non trovato")
-	}
+	// Get member from fiber locals
+	member := utils.GetLocalMember(c)
 
 	return h.Http.Success(c, []interface{}{member}, "Membro recuperato")
 }
