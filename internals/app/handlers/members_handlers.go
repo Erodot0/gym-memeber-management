@@ -81,16 +81,11 @@ func (h *MembersHandlers) DeleteMember(c *fiber.Ctx) error {
 }
 
 func (h *MembersHandlers) GetMemberSubscriptions(c *fiber.Ctx) error {
-	memberId := c.Params("id")
-
-	// conver string to int
-	id, err := utils.StringToUint(memberId)
-	if err != nil {
-		return h.Http.BadRequest(c, "id non valido")
-	}
+	// Get member from fiber locals
+	member := utils.GetLocalMember(c)
 
 	// Get subrscriptions
-	subscriptions, err := h.Services.GetAllSubscriptions(id)
+	subscriptions, err := h.Services.GetAllSubscriptions(member.ID)
 	if err != nil {
 		return h.Http.NotFound(c, "Membros non trovato")
 	}
