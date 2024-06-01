@@ -31,10 +31,16 @@ func (r *Routes) RegisterMemberRoutes() {
 		Http:        &secondary.HttpServices{},
 	}
 
+	memberMiddleware := middlewares.MemberMiddlewares{
+		Services: &memberServices,
+		Parser:   &primary.ErrorHandler{},
+		Http:     &secondary.HttpServices{},
+	}
+
 	r.App.Post("/api/v1/members", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, memberHandler.CreateMember)
 	r.App.Get("/api/v1/members", userMiddleware.AuthorizeUser, memberHandler.GetMembers)
 	
-	r.App.Get("/api/v1/members/:id", userMiddleware.AuthorizeUser, memberHandler.GetMemberById)
+	r.App.Get("/api/v1/members/:id", userMiddleware.AuthorizeUser, memberMiddleware.GetMember, memberHandler.GetMemberById)
 	r.App.Put("/api/v1/members/:id", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, memberHandler.UpdateMember)
 	r.App.Delete("/api/v1/members/:id", userMiddleware.AuthorizeUser, userMiddleware.OnlyOwner, memberHandler.DeleteMember)
 
