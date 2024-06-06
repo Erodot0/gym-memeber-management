@@ -133,3 +133,20 @@ func (h *MembersHandlers) UpdateMemberSubscription(c *fiber.Ctx) error {
 
 	return h.Http.Success(c, updatedSub, "Iscrizione aggiornata")
 }
+
+func (h *MembersHandlers) DeleteMemberSubscription(c *fiber.Ctx) error {
+	// Get member from fiber locals
+	member := utils.GetLocalMember(c)
+	sub_id := utils.GetUintParam(c, "sub_id")
+
+	if sub_id == 0 {
+		return h.Http.BadRequest(c, "Specificare l'id dell'iscrizione da eliminare")
+	}
+
+	// Delete subrscription
+	if err := h.Services.DeleteSubscription(member.ID, sub_id); err != nil {
+		return h.Http.NotFound(c, "Iscrizione non trovata")
+	}
+
+	return h.Http.Success(c, nil, "Iscrizione eliminata")
+}
