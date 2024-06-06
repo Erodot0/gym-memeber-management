@@ -106,3 +106,30 @@ func (h *MembersHandlers) GetMemberSubscriptionById(c *fiber.Ctx) error {
 
 	return h.Http.Success(c, subscription, "Iscrizione recuperata")
 }
+
+func (h *MembersHandlers) UpdateMemberSubscription(c *fiber.Ctx) error {
+	// Get member from fiber locals
+	member := utils.GetLocalMember(c)
+	sub_id := utils.GetUintParam(c, "sub_id")
+	subscription := new(entities.UpdateSubscription)
+	if err := h.Parser.ParseData(c, subscription); err != nil {
+		return h.Http.BadRequest(c, "Errore nella gestione dei dati")
+	}
+
+	// Validate subscription
+	if err := subscription.Validate(); err != nil {
+		return h.Http.BadRequest(c, err.Error())
+	}
+
+	// Add ending date
+	subscription.AddEndDate()
+
+
+	// Update subrscription
+	updatedSub, err := h.Services.UpdateSubscription(member.ID, sub_id, subscription)
+	if err != nil {
+		return h.Http.NotFound(c, "Iscrizione non trovata")
+	}
+
+	return h.Http.Success(c, updatedSub, "Iscrizione aggiornata")
+}
