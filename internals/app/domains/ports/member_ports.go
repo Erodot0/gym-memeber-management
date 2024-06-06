@@ -72,4 +72,16 @@ type MemberServices interface {
 	// - error: an error if the retrieval process encounters any issues.
 	//
 	GetSubscriptionById(id uint, sub_id uint) ([]entities.Subscription, error)
+
+	// UpdateSubscription updates a subscription for a given member ID and subscription ID.
+	//
+	// Parameters:
+	// - user_id: the ID of the member.
+	// - sub_id: the ID of the subscription.
+	// - subscription: the updated Subscription entity.
+	//
+	// Return type:
+	// - error: an error if the update process encounters any issues.
+	//
+	UpdateSubscription(user_id uint, sub_id uint, subscription *entities.UpdateSubscription) ([]entities.Subscription, error)
 }

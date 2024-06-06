@@ -88,3 +88,16 @@ func (m *MemberServices) GetSubscriptionById(id uint, sub_id uint) ([]entities.S
 	}
 	return subscriptions, nil
 }
+
+func (m *MemberServices) UpdateSubscription(user_id uint, sub_id uint, subscription *entities.UpdateSubscription) ([]entities.Subscription, error) {
+	var subscriptions []entities.Subscription
+	if err := m.DB.
+		Model(entities.Subscription{}).
+		Where("user_id = ? AND id = ?", user_id, sub_id).
+		Updates(subscription).
+		Find(&subscriptions).
+		Error; err != nil {
+		return nil, err
+	}
+	return subscriptions, nil
+}
