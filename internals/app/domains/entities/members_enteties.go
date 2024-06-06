@@ -152,7 +152,7 @@ func (s *Subscription) Validate() error {
 	return nil
 }
 
-func (m *UpdateSubscription) ValidateUpdatedSubscription() error {
+func (m *UpdateSubscription) Validate() error {
 	validTypes := map[string]bool{
 		"mensile":     true,
 		"trimestrale": true,
