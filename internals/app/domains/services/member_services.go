@@ -101,3 +101,10 @@ func (m *MemberServices) UpdateSubscription(user_id uint, sub_id uint, subscript
 	}
 	return subscriptions, nil
 }
+
+func (m *MemberServices) DeleteSubscription(user_id uint, sub_id uint) error {
+	return m.DB.
+		Where("user_id = ? AND id = ? AND deleted_at IS NULL", user_id, sub_id).
+		Delete(&entities.Subscription{}).
+		Error
+}
