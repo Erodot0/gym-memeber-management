@@ -73,15 +73,15 @@ type MemberServices interface {
 	//
 	GetSubscriptionById(id uint, sub_id uint) ([]entities.Subscription, error)
 
-	// UpdateSubscription updates a subscription for a given member ID and subscription ID.
+	// UpdateSubscription updates a subscription for a given user and subscription ID.
 	//
 	// Parameters:
-	// - user_id: the ID of the member.
+	// - user_id: the ID of the user.
 	// - sub_id: the ID of the subscription.
-	// - subscription: the updated Subscription entity.
+	// - subscription: a pointer to an entities.UpdateSubscription struct containing the new subscription details.
 	//
 	// Return type:
+	// - []entities.Subscription: a slice of entities.Subscription representing the updated subscriptions.
 	// - error: an error if the update process encounters any issues.
-	//
 	UpdateSubscription(user_id uint, sub_id uint, subscription *entities.UpdateSubscription) ([]entities.Subscription, error)
 }
