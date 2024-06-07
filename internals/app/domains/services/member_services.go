@@ -65,6 +65,14 @@ func (m *MemberServices) DeleteMember(id uint) error {
 		Error
 }
 
+func (m *MemberServices) CreateMemberSubscription(user_id uint, subscription *entities.Subscription) error {
+	subscription.UserID = user_id
+	return m.DB.
+		Model(entities.Subscription{}).
+		Create(subscription).
+		Error
+}
+
 func (m *MemberServices) GetAllSubscriptions(id uint) ([]entities.Subscription, error) {
 	var subscriptions []entities.Subscription
 	if err := m.DB.

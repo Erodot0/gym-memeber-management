@@ -56,6 +56,17 @@ type MemberServices interface {
 	//
 	DeleteMember(id uint) error
 
+	// CreateSubscription creates a new subscription for a given member ID.
+	//
+	// Parameters:
+	// - user_id: the ID of the member.
+	// - subscription: the subscription entity to be created.
+	//
+	// Return type:
+	// - error: an error if the creation process encounters any issues.
+	//
+	CreateMemberSubscription(user_id uint, subscription *entities.Subscription) error
+
 	// GetAllSubscriptions retrieves all subscriptions for a given member ID.
 	//
 	// Parameters:
