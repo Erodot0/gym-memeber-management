@@ -80,6 +80,30 @@ func (h *MembersHandlers) DeleteMember(c *fiber.Ctx) error {
 	return h.Http.Success(c, nil, "Membro eliminato")
 }
 
+func (h *MembersHandlers) CreateMemberSubscription(c *fiber.Ctx) error {
+	// Get member from fiber locals
+	member := utils.GetLocalMember(c)
+	subscription := new(entities.Subscription)
+	if err := h.Parser.ParseData(c, subscription); err != nil {
+		return h.Http.BadRequest(c, "Errore nella gestione dei dati")
+	}
+
+	// Validate subscription
+	if err := subscription.Validate(); err != nil {
+		return h.Http.BadRequest(c, err.Error())
+	}
+
+	// Add ending date
+	subscription.AddEndDate()
+
+	// Create subscription
+	if err := h.Services.CreateMemberSubscription(member.ID, subscription); err != nil {
+		return h.Http.InternalServerError(c, "Errore nel creare l'iscrizione")
+	}
+
+	return h.Http.Success(c, subscription, "Iscrizione creata")
+}
+
 func (h *MembersHandlers) GetMemberSubscriptions(c *fiber.Ctx) error {
 	// Get member from fiber locals
 	member := utils.GetLocalMember(c)
@@ -123,7 +147,6 @@ func (h *MembersHandlers) UpdateMemberSubscription(c *fiber.Ctx) error {
 
 	// Add ending date
 	subscription.AddEndDate()
-
 
 	// Update subrscription
 	updatedSub, err := h.Services.UpdateSubscription(member.ID, sub_id, subscription)
