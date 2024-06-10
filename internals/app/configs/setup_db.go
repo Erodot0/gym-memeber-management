@@ -27,6 +27,7 @@ func InitializeSQLite() (*gorm.DB, error) {
 		&entities.Contacts{},
 		&entities.Address{},
 		&entities.Subscription{},
+		&entities.Roles{},
 	); err != nil {
 		log.Println(err)
 		return nil, err
