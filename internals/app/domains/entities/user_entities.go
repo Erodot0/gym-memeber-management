@@ -14,15 +14,11 @@ type User struct {
 	Name     string `json:"name" gorm:"not null"`
 	Surname  string `json:"surname" gorm:"not null"`
 	Password string `json:"password,omitempty" gorm:"not null"`
-	Role     string `json:"role" gorm:"not null"`
+	RoleID   uint   `json:"role_id" gorm:"not null;index"`
+	Role     Roles  `json:"role" gorm:"foreignKey:RoleID"`
 }
 
-func (u *User) Validate(phase string) error {
-	//Check the role
-	if (u.Role != "owner" && u.Role != "admin" && phase == "register") {
-		return fmt.Errorf("invalid role")
-	}
-
+func (u *User) Validate() error {
 	//Check the email
 	if u.Email == "" {
 		return fmt.Errorf("email is required")
@@ -31,6 +27,11 @@ func (u *User) Validate(phase string) error {
 	//Check the password
 	if u.Password == "" {
 		return fmt.Errorf("password is required")
+	}
+
+	//Check the Role
+	if u.RoleID == 0 {
+		return fmt.Errorf("role is required")
 	}
 
 	return nil
@@ -42,11 +43,11 @@ func (u *User) RemovePassword() {
 
 func (u *User) NewSession(c *fiber.Ctx, token string) Session {
 	return Session{
-		Token:  token,
-		UserID: u.ID,
+		Token:     token,
+		UserID:    u.ID,
 		IPAddress: c.IP(),
 		UserAgent: c.Get("user-agent"),
-		Expires:  10 * time.Hour, // 10 hours session
+		Expires:   10 * time.Hour, // 10 hours session
 	}
 }
 
