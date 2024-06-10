@@ -14,8 +14,8 @@ type User struct {
 	Name     string `json:"name" gorm:"not null"`
 	Surname  string `json:"surname" gorm:"not null"`
 	Password string `json:"password,omitempty" gorm:"not null"`
-    RoleID   uint   `json:"role_id" gorm:"index"` // Foreign key
-    Role     Roles   `json:"role" gorm:"foreignKey:RoleID;references:ID"`
+	RoleID   uint   `json:"role_id" gorm:"index"` // Foreign key
+	Role     *Roles `json:"role,omitempty" gorm:"foreignKey:RoleID;references:ID"`
 }
 
 func (u *User) Validate() error {
