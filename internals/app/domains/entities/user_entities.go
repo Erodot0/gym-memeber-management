@@ -14,8 +14,8 @@ type User struct {
 	Name     string `json:"name" gorm:"not null"`
 	Surname  string `json:"surname" gorm:"not null"`
 	Password string `json:"password,omitempty" gorm:"not null"`
-	RoleID   uint   `json:"role_id" gorm:"not null;index"`
-	Role     Roles  `json:"role" gorm:"foreignKey:RoleID"`
+    RoleID   uint   `json:"role_id" gorm:"index"` // Foreign key
+    Role     Roles   `json:"role" gorm:"foreignKey:RoleID;references:ID"`
 }
 
 func (u *User) Validate() error {
@@ -32,6 +32,20 @@ func (u *User) Validate() error {
 	//Check the Role
 	if u.RoleID == 0 {
 		return fmt.Errorf("role is required")
+	}
+
+	return nil
+}
+
+func (u *User) ValidateLogin() error {
+	//Check the email
+	if u.Email == "" {
+		return fmt.Errorf("email is required")
+	}
+
+	//Check the password
+	if u.Password == "" {
+		return fmt.Errorf("password is required")
 	}
 
 	return nil

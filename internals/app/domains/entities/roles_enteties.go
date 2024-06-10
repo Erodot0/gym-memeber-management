@@ -7,9 +7,9 @@ import (
 )
 
 type Roles struct {
-	gorm.Model
-	Name  string `json:"name" gorm:"unique;not null;index"`
-	Users []User `json:"users" gorm:"foreignKey:ID;"`
+    gorm.Model
+    Name  string `json:"name" gorm:"unique;not null;index"`
+    Users []User `json:"users" gorm:"foreignKey:RoleID"`
 }
 
 type UpdateRoles struct {
