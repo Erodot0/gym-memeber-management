@@ -49,7 +49,8 @@ func (s *UserServices) GetAllUsers() ([]entities.User, error) {
 	var users []entities.User
 	return users, s.DB.
 		Model(&users).
-		Select("ID", "name", "surname", "email", "created_at", "role").
+		Preload("Role").
+		Select("ID", "name", "surname", "email", "created_at", "updated_at", "role_id").
 		Find(&users).
 		Error
 }
