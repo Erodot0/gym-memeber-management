@@ -23,6 +23,7 @@ func Initialize(db *gorm.DB, redis *redis.Client) {
 
 	routes.RegisterMemberRoutes()
 	routes.RegisterUserRoutes()
+	routes.RegisterRolesRoutes()
 
 	if err := app.Listen(":" + os.Getenv("SERVER_PORT")); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
