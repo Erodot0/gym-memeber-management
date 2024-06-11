@@ -24,7 +24,7 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	}
 
 	//Validate user
-	if err := user.Validate("register"); err != nil {
+	if err := user.Validate(); err != nil {
 		return h.Http.BadRequest(c, err.Error())
 	}
 
@@ -55,7 +55,7 @@ func (h *UserHandlers) Login(c *fiber.Ctx) error {
 	}
 
 	//Validate user
-	if err := user.Validate("login"); err != nil {
+	if err := user.ValidateLogin(); err != nil {
 		return h.Http.BadRequest(c, err.Error())
 	}
 
@@ -127,7 +127,7 @@ func (u *UserHandlers) DeleteUser(c *fiber.Ctx) error {
 	}
 
 	// Check if user is an owner
-	if user.Role == "owner" {
+	if user.Role.Name == "owner" {
 		return u.Http.BadRequest(c, "You can't delete the owner")
 	}
 
