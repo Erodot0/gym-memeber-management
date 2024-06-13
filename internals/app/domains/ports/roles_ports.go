@@ -31,6 +31,17 @@ type RolesPort interface {
 	//
 	GetRole(id uint) (*entities.Roles, error)
 
+	// GetRolePermissions retrieves the permissions of a role from the system by its ID.
+	//
+	// Parameters:
+	// - roleID: The ID of the role to retrieve the permissions for.
+	//
+	// Returns:
+	// - []entities.Permissions: A slice of entities.Permissions representing the permissions of the role.
+	// - error: An error object if there was an issue retrieving the permissions, otherwise nil.
+	//
+	GetRolePermissions(roleID uint) ([]entities.Permissions, error)
+
 	// UpdateRole updates a role in the system by its ID.
 	//
 	// Parameters:

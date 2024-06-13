@@ -40,6 +40,17 @@ func (r *RolesServices) GetRole(id uint) (*entities.Roles, error) {
 	return &role, nil
 }
 
+func (r *RolesServices) GetRolePermissions(roleID uint) ([]entities.Permissions, error) {
+	var permissions []entities.Permissions
+	if err := r.DB.
+		Where("role_id = ?", roleID).
+		Find(&permissions).
+		Error; err != nil {
+		return nil, err
+	}
+	return permissions, nil
+}
+
 func (r *RolesServices) UpdateRole(id uint, role *entities.UpdateRoles) error {
 	return r.DB.Model(&entities.Roles{}).Where("id = ?", id).Updates(role).Error
 }
