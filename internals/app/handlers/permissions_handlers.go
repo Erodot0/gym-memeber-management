@@ -54,6 +54,12 @@ func (p *PermissionsHandler) UpdatePermission(c *fiber.Ctx) error {
 		return err
 	}
 
+	// Check if the permission exists
+	_, err := p.permissionsService.GetPermission(id)
+	if err != nil {
+		return p.http.NotFound(c, "Permesso non trovato")
+	}
+
 	if err := p.permissionsService.ValidateUpdatePermission(perm); err != nil {
 		return p.http.BadRequest(c, err.Error())
 	}
