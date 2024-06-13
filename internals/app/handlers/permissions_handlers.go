@@ -22,9 +22,14 @@ func NewPermissionsHandler(permissionsService ports.PermissionsPort, http ports.
 }
 
 func (p *PermissionsHandler) CreatePermission(c *fiber.Ctx) error {
+	id := utils.GetUintParam(c, "id")
 	perm := &entities.Permissions{}
 	if err := p.parser.ParseData(c, perm); err != nil {
 		return err
+	}
+
+	if id != 0 {
+		perm.RoleId = id
 	}
 
 	if err := p.permissionsService.ValidateNewPermission(perm); err != nil {
