@@ -18,7 +18,9 @@ func (r *RolesServices) CreateRole(role *entities.Roles) error {
 func (r *RolesServices) GetAllRoles() ([]entities.Roles, error) {
 	var roles []entities.Roles
 	if err := r.DB.
-		Preload("Users").
+		Preload("Users", func(db *gorm.DB) *gorm.DB {
+			return db.Omit("password")
+		}).
 		Find(&roles).Error; err != nil {
 		return nil, err
 	}
@@ -28,7 +30,9 @@ func (r *RolesServices) GetAllRoles() ([]entities.Roles, error) {
 func (r *RolesServices) GetRole(id uint) (*entities.Roles, error) {
 	var role entities.Roles
 	if err := r.DB.
-		Preload("Users").
+		Preload("Users", func(db *gorm.DB) *gorm.DB {
+			return db.Omit("password")
+		}).
 		First(&role, id).
 		Error; err != nil {
 		return nil, err
