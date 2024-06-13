@@ -62,6 +62,22 @@ func (h *RolesHandlers) GetRole(c *fiber.Ctx) error {
 	return h.Http.Success(c, []interface{}{role}, "Ruolo recuperato")
 }
 
+func (h *RolesHandlers) GerRolePermissions(c *fiber.Ctx) error {
+	id := utils.GetUintParam(c, "id")
+
+	if id == 0 {
+		return h.Http.BadRequest(c, "Specificare l'id del ruolo")
+	}
+
+	// Get role
+	role, err := h.RolesService.GetRolePermissions(id)
+	if err != nil {
+		return h.Http.NotFound(c, "Ruolo non trovato")
+	}
+
+	return h.Http.Success(c, role, "Permessi recuperati")
+}
+
 func (h *RolesHandlers) UpdateRole(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "id")
 	role := new(entities.UpdateRoles)
