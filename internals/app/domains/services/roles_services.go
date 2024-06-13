@@ -27,7 +27,10 @@ func (r *RolesServices) GetAllRoles() ([]entities.Roles, error) {
 
 func (r *RolesServices) GetRole(id uint) (*entities.Roles, error) {
 	var role entities.Roles
-	if err := r.DB.First(&role, id).Error; err != nil {
+	if err := r.DB.
+		Preload("Users").
+		First(&role, id).
+		Error; err != nil {
 		return nil, err
 	}
 	return &role, nil
