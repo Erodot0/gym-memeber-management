@@ -71,6 +71,26 @@ func (s *UserServices) GetUserByEmail(user *entities.User) error {
 		Error
 }
 
+func (s *UserServices) UpdateUser(id uint, u *entities.UpdateUser) (*entities.User, error) {
+	if err := s.DB.Model(&entities.User{}).Where("id = ?", id).Updates(u).Error; err != nil {
+		return nil, err
+	}
+
+	user := &entities.User{}
+
+	if err := s.DB.
+		Model(user).
+		Where("id = ?", id).
+		Preload("Role").
+		Select("ID", "name", "surname", "email", "created_at", "updated_at", "role_id").
+		First(user).
+		Error; err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
 	//Generate random token
 	token, err := utils.GenerateRandomToken(32)

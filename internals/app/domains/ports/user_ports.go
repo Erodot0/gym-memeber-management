@@ -41,7 +41,7 @@ type UserServices interface {
 	//
 	// Return type: error.
 	DeleteUser(u *entities.User) error
-	
+
 	// GetAllUsers retrieves all users from the database.
 	//
 	// Return type:
@@ -65,6 +65,15 @@ type UserServices interface {
 	//
 	// Return type: error.
 	GetUserByEmail(user *entities.User) error
+
+	// UpdateUser updates a user in the database.
+	//
+	// Parameters:
+	//   - id: the ID of the user to be updated.
+	//   - u: the updated user data.
+	//
+	// Return type: *entities.User, error.
+	UpdateUser(id uint, u *entities.UpdateUser) (*entities.User, error) 
 
 	// SetSession sets a session for a user in the database.
 	//
