@@ -6,6 +6,7 @@ import (
 )
 
 type UserServices interface {
+
 	// EcnrypPassword generates a hashed password from the input password string using bcrypt.
 	//
 	// Parameters:
@@ -15,6 +16,7 @@ type UserServices interface {
 	//   - string: the hashed password.
 	//   - error: an error if any occurs during the hashing process.
 	EcnrypPassword(password string) (string, error)
+
 	// ComparePassword compares a hashed password with a plaintext password.
 	//
 	// Parameters:
@@ -23,6 +25,7 @@ type UserServices interface {
 	//
 	// Return type: error.
 	ComparePassword(hashedPassword, password string) error
+
 	// CreateUser creates a new user in the database.
 	//
 	// Parameters:
@@ -30,6 +33,7 @@ type UserServices interface {
 	//
 	// Return type: error.
 	CreateUser(user *entities.User) error
+
 	// DeleteUser deletes a user from the database.
 	//
 	// Parameters:
@@ -37,12 +41,14 @@ type UserServices interface {
 	//
 	// Return type: error.
 	DeleteUser(u *entities.User) error
+	
 	// GetAllUsers retrieves all users from the database.
 	//
 	// Return type:
 	//   - []entities.User
 	//
 	GetAllUsers() ([]entities.User, error)
+
 	// GetUserById retrieves a user from the database by their ID.
 	//
 	// Parameters:
@@ -51,6 +57,7 @@ type UserServices interface {
 	// Return type: error. If the user is found, the User entity will be populated with the user's data.
 	//               If the user is not found, an error will be returned.
 	GetUserById(u *entities.User) error
+
 	// GetUserByEmail retrieves a user from the database by their email.
 	//
 	// Parameters:
@@ -58,6 +65,7 @@ type UserServices interface {
 	//
 	// Return type: error.
 	GetUserByEmail(user *entities.User) error
+
 	// SetSession sets a session for a user in the database.
 	//
 	// Parameters:
@@ -66,6 +74,7 @@ type UserServices interface {
 	//
 	// Return type: error.
 	SetSession(c *fiber.Ctx, user *entities.User) error
+
 	// GetSessionByToken retrieves a session from the database by its token.
 	//
 	// Parameters:
@@ -75,6 +84,7 @@ type UserServices interface {
 	//   - *entities.Session: the session with the given token, or nil if not found.
 	//   - error: an error if the retrieval process encounters any issues.
 	GetSessionByToken(token string) (*entities.Session, error)
+
 	// DeleteSession deletes a user session from the database by its ID.
 	//
 	// Parameters:
@@ -83,6 +93,7 @@ type UserServices interface {
 	//
 	// Return type: error.
 	DeleteSession(c *fiber.Ctx, id uint) error
+
 	// DeleteAllSessions deletes all user sessions from the database by its ID.
 	//
 	// Parameters:
