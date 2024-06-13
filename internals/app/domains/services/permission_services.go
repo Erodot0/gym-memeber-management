@@ -18,6 +18,14 @@ func NewPermissionsService(db *gorm.DB) *PermissionsService {
 }
 
 func (p *PermissionsService) ValidateNewPermission(perm *entities.Permissions) error {
+	// Check if the permission already exists
+	exists, err := p.CheckPermissionExists(perm.TableName, perm.RoleId)
+	if err != nil {
+		return fmt.Errorf("errore nel controllo dell'esistenza del permesso")
+	}
+	if exists {
+		return fmt.Errorf("i permessi per questa tabella e ruolo sono già presenti")
+	}
 	// Check if the role exists
 	if perm.RoleId == 0 {
 		return fmt.Errorf("il ruolo è obbligatorio")
@@ -29,23 +37,18 @@ func (p *PermissionsService) ValidateNewPermission(perm *entities.Permissions) e
 		return fmt.Errorf("il ruolo non è valido")
 	}
 
-	// Check if the table exists
-	if perm.Table == "" {
+	// Check if the table_name exists
+	if perm.TableName == "" {
 		return fmt.Errorf("la tabella è obbligatoria")
 	}
 
+	// Check if the table exists
+	if !p.db.Migrator().HasTable(perm.TableName) {
+		return fmt.Errorf("la tabella non è valida")
+	}
 	// Check if the action is valid
 	if perm.Create > 1 || perm.Update > 2 || perm.Read > 2 || perm.Delete > 2 {
 		return fmt.Errorf("assegnare i permessi correttamente")
-	}
-
-	// Check if the permission already exists
-	exists, err := p.CheckPermissionExists(perm.Table, perm.RoleId)
-	if err != nil {
-		return fmt.Errorf("errore nel controllo dell'esistenza del permesso")
-	}
-	if exists {
-		return fmt.Errorf("i permessi per questa tabella e ruolo sono già presenti")
 	}
 
 	return nil
@@ -79,9 +82,9 @@ func (p *PermissionsService) GetPermissionsByRole(roleId uint) ([]entities.Permi
 	return perms, p.db.Where("role_id = ?", roleId).Find(&perms).Error
 }
 
-func (p *PermissionsService) GetPermissionsByTable(table string) ([]entities.Permissions, error) {
+func (p *PermissionsService) GetPermissionsByTable(table_name string) ([]entities.Permissions, error) {
 	perms := []entities.Permissions{}
-	return perms, p.db.Where("table = ?", table).Find(&perms).Error
+	return perms, p.db.Where("table_name = ?", table_name).Find(&perms).Error
 }
 
 func (p *PermissionsService) UpdatePermission(id uint, perm *entities.UpdatePermissions) (*entities.Permissions, error) {
@@ -99,22 +102,23 @@ func (p *PermissionsService) DeletePermission(id uint) error {
 	return p.db.Delete(&entities.Permissions{}, id).Error
 }
 
-func (p *PermissionsService) HasPermission(table string, roleId uint, action string) (bool, error) {
+func (p *PermissionsService) HasPermission(table_name string, roleId uint, action string) (bool, error) {
 	perm := &entities.Permissions{}
 	return p.db.
 		Where(
-			"table = ? AND role_id = ? AND action = ?",
-			table, roleId, action).
+			"table_name = ? AND role_id = ? AND action = ?",
+			table_name, roleId, action).
 		First(perm).
 		Error == nil, nil
 }
 
-func (p *PermissionsService) CheckPermissionExists(table string, roleId uint) (bool, error) {
-	perm := &entities.Permissions{}
-	return p.db.
-		Where(
-			"table = ? AND role_id = ?",
-			table, roleId).
-		First(perm).
-		Error == nil, nil
+func (p *PermissionsService) CheckPermissionExists(table_name string, roleId uint) (bool, error) {
+	var count int64
+	err := p.db.Model(&entities.Permissions{}).
+		Where("table_name = ? AND role_id = ?", table_name, roleId).
+		Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
