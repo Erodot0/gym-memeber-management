@@ -18,6 +18,12 @@ type User struct {
 	Role     *Roles `json:"role,omitempty" gorm:"foreignKey:RoleID;references:ID"`
 }
 
+type UpdateUser struct {
+	Name     string `json:"name"`
+	Surname  string `json:"surname"`
+	RoleID   uint   `json:"role_id"`
+}
+
 func (u *User) Validate() error {
 	//Check the email
 	if u.Email == "" {
