@@ -105,7 +105,29 @@ func (u *UserHandlers) GetUsers(c *fiber.Ctx) error {
 	if err != nil {
 		return u.Http.InternalServerError(c, err.Error())
 	}
-	return u.Http.Success(c, users, "Users retrieved")
+	return u.Http.Success(c, users, "Utenti recuperati correttamente")
+}
+
+func (u *UserHandlers) UpdateUser(c *fiber.Ctx) error {
+	// Check if user exists
+	user := new(entities.User)
+	user.ID = utils.GetUintParam(c, "id")
+	if err := u.Services.GetUserById(user); err != nil {
+		return u.Http.NotFound(c, "Utente non trovato")
+	}
+
+	newUser := new(entities.UpdateUser)
+	if err := u.Parser.ParseData(c, newUser); err != nil {
+		return u.Http.BadRequest(c, err.Error())
+	}
+
+	// update user
+	user, err := u.Services.UpdateUser(user.ID, newUser)
+	if err != nil {
+		return u.Http.InternalServerError(c, err.Error())
+	}
+
+	return u.Http.Success(c, []interface{}{user}, "User updated")
 }
 
 // DeleteUser handles the deletion of a user.
