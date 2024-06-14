@@ -40,6 +40,14 @@ func GetLocalMember(c *fiber.Ctx) *entities.Member {
 	return c.Locals("member").(*entities.Member)
 }
 
+// GetLocalRole retrieves the local role from the fiber context.
+//
+// Parameter: c *fiber.Ctx
+// Return type: *entities.Role
+func GetLocalRole(c *fiber.Ctx) *entities.Roles {
+	return c.Locals("role").(*entities.Roles)
+}
+
 // GetStringParam returns the value of the specified parameter from the API request.
 //
 // Parameters:
