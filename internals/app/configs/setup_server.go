@@ -15,11 +15,7 @@ func Initialize(db *gorm.DB, redis *redis.Client) {
 
 	newFiberLimiter(app)
 
-	routes := &routes.Routes{
-		App:   app,
-		DB:    db,
-		Cache: redis,
-	}
+	routes := routes.NewRoutes(app, db, redis)
 
 	routes.RegisterMemberRoutes()
 	routes.RegisterUserRoutes()
