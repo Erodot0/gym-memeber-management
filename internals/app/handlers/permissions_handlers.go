@@ -8,12 +8,12 @@ import (
 )
 
 type PermissionsHandler struct {
-	permissionsService ports.PermissionsPort
+	permissionsService ports.PermissionsServices
 	http               ports.HttpAdapters
 	parser             ports.ParserAdapters
 }
 
-func NewPermissionsHandler(permissionsService ports.PermissionsPort, http ports.HttpAdapters, parser ports.ParserAdapters) *PermissionsHandler {
+func NewPermissionsHandler(permissionsService ports.PermissionsServices, http ports.HttpAdapters, parser ports.ParserAdapters) *PermissionsHandler {
 	return &PermissionsHandler{
 		permissionsService: permissionsService,
 		http:               http,
@@ -106,7 +106,7 @@ func (p *PermissionsHandler) DeletePermission(c *fiber.Ctx) error {
 	}
 
 	// Check if the permission exists
-	_, err := p.permissionsService.GetPermission(id); 
+	_, err := p.permissionsService.GetPermission(id)
 	if err != nil {
 		return p.http.NotFound(c, "Permesso non trovato")
 	}

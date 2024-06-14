@@ -10,7 +10,7 @@ import (
 type RolesHandlers struct {
 	Parser       ports.ParserAdapters
 	Http         ports.HttpAdapters
-	RolesService ports.RolesPort
+	RolesService ports.RolesServices
 }
 
 func (h *RolesHandlers) CreateRole(c *fiber.Ctx) error {
