@@ -4,7 +4,7 @@ import (
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 )
 
-type MemberServices interface {
+type MemberServicesPort interface {
 
 	// CreateMember creates a new member in the database.
 	//

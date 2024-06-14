@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type UserServices interface {
+type UserServicesPort interface {
 
 	// EcnrypPassword generates a hashed password from the input password string using bcrypt.
 	//

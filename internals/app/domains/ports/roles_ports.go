@@ -2,8 +2,8 @@ package ports
 
 import "github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 
-type RolesPort interface {
-	
+type RolesServicesPort interface {
+
 	// CreateRole creates a new role in the system.
 	//
 	// Parameters:

@@ -8,12 +8,26 @@ import (
 
 // HttpResponses defines methods for handling HTTP responses
 type HttpAdapters interface {
+
+	// 200 ok response
 	Success(c *fiber.Ctx, data interface{}, message string) error
+
+	// 400 bad request
 	BadRequest(c *fiber.Ctx, message string) error
+
+	// 401 unauthorized
 	Unauthorized(c *fiber.Ctx) error
+
+	// 403 forbidden
 	Forbidden(c *fiber.Ctx) error
+
+	// 404 not found
 	NotFound(c *fiber.Ctx, message string) error
+
+	// 500 internal server error
 	InternalServerError(c *fiber.Ctx, message string) error
+
+	// 200 ok response with file
 	WithFile(c *fiber.Ctx, pathToFile string) error
 }
 
@@ -72,7 +86,13 @@ type CacheAdapters interface {
 
 // CachePort defines methods for handling cache
 type CachePort interface {
+
+	// SetCacheKey returns the cache key for the cache port.
 	SetCacheKey() string
+
+	// SetCacheExpiration returns the expiration time for the cache port.
 	SetCacheExpiration() time.Duration
+
+	// GetCacheKey returns the cache key for the cache port.
 	GetCacheKey() string
 }
