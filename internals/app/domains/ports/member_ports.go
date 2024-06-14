@@ -1,10 +1,8 @@
 package ports
 
-import (
-	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
-)
+import "github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 
-type MemberServicesPort interface {
+type MemberServices interface {
 
 	// CreateMember creates a new member in the database.
 	//

@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type UserServicesPort interface {
+type UserServices interface {
 
 	// EcnrypPassword generates a hashed password from the input password string using bcrypt.
 	//
@@ -73,7 +73,7 @@ type UserServicesPort interface {
 	//   - u: the updated user data.
 	//
 	// Return type: *entities.User, error.
-	UpdateUser(id uint, u *entities.UpdateUser) (*entities.User, error) 
+	UpdateUser(id uint, u *entities.UpdateUser) (*entities.User, error)
 
 	// SetSession sets a session for a user in the database.
 	//

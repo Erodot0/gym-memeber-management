@@ -2,7 +2,7 @@ package ports
 
 import "github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 
-type PermissionsServicesPort interface {
+type PermissionsServices interface {
 
 	// ValidateNewPermission checks if a new permission is valid.
 	//
