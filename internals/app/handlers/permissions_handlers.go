@@ -13,14 +13,15 @@ type PermissionsHandler struct {
 	parser             ports.ParserAdapters
 }
 
-func NewPermissionsHandler(permissionsService ports.PermissionsServices, http ports.HttpAdapters, parser ports.ParserAdapters) *PermissionsHandler {
+func NewPermissionsHandler(parser ports.ParserAdapters, http ports.HttpAdapters, permissionsService ports.PermissionsServices) *PermissionsHandler {
 	return &PermissionsHandler{
-		permissionsService: permissionsService,
 		http:               http,
 		parser:             parser,
+		permissionsService: permissionsService,
 	}
 }
 
+// CreatePermission handles the creation of a new permission.
 func (p *PermissionsHandler) CreatePermission(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "id")
 	perm := &entities.Permissions{}
@@ -43,6 +44,7 @@ func (p *PermissionsHandler) CreatePermission(c *fiber.Ctx) error {
 	return p.http.Success(c, []interface{}{perm}, "Permesso creato")
 }
 
+// UpdatePermission handles the update of an existing permission.
 func (p *PermissionsHandler) UpdatePermission(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "perm_id")
 	if id == 0 {
@@ -72,6 +74,7 @@ func (p *PermissionsHandler) UpdatePermission(c *fiber.Ctx) error {
 	return p.http.Success(c, []interface{}{permission}, "Permesso aggiornato")
 }
 
+// GetPermission handles the retrieval of a permission by its ID.
 func (p *PermissionsHandler) GetPermission(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "perm_id")
 	if id == 0 {
@@ -86,6 +89,7 @@ func (p *PermissionsHandler) GetPermission(c *fiber.Ctx) error {
 	return p.http.Success(c, []interface{}{permission}, "Permesso recuperato")
 }
 
+// GetPermissions handles the retrieval of all permissions.
 func (p *PermissionsHandler) GetPermissions(c *fiber.Ctx) error {
 	permissions, err := p.permissionsService.GetAllPermissions()
 	if err != nil {
@@ -99,6 +103,7 @@ func (p *PermissionsHandler) GetPermissions(c *fiber.Ctx) error {
 	return p.http.Success(c, permissions, "Permesso recuperato")
 }
 
+// DeletePermission handles the deletion of a permission by its ID.
 func (p *PermissionsHandler) DeletePermission(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "perm_id")
 	if id == 0 {

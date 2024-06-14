@@ -8,113 +8,127 @@ import (
 )
 
 type RolesHandlers struct {
-	Parser       ports.ParserAdapters
-	Http         ports.HttpAdapters
-	RolesService ports.RolesServices
+	parser        ports.ParserAdapters
+	http          ports.HttpAdapters
+	rolesServices ports.RolesServices
 }
 
+func NewRolesHandlers(parser ports.ParserAdapters, http ports.HttpAdapters, rolesService ports.RolesServices) *RolesHandlers {
+	return &RolesHandlers{
+		parser:        parser,
+		http:          http,
+		rolesServices: rolesService,
+	}
+}
+
+// CreateRole handles the creation of a new role.
 func (h *RolesHandlers) CreateRole(c *fiber.Ctx) error {
 	role := new(entities.Roles)
-	if err := h.Parser.ParseData(c, role); err != nil {
-		return h.Http.BadRequest(c, "Errore nella gestione dei dati")
+	if err := h.parser.ParseData(c, role); err != nil {
+		return h.http.BadRequest(c, "Errore nella gestione dei dati")
 	}
 
 	// Validate role
 	if err := role.Validate(); err != nil {
-		return h.Http.BadRequest(c, err.Error())
+		return h.http.BadRequest(c, err.Error())
 	}
 
 	// Create role
-	if err := h.RolesService.CreateRole(role); err != nil {
-		return h.Http.InternalServerError(c, "Errore nel creare il ruolo")
+	if err := h.rolesServices.CreateRole(role); err != nil {
+		return h.http.InternalServerError(c, "Errore nel creare il ruolo")
 	}
 
-	return h.Http.Success(c, []interface{}{role}, "Ruolo creato!")
+	return h.http.Success(c, []interface{}{role}, "Ruolo creato!")
 }
 
+// GetAllRoles handles the retrieval of all roles.
 func (h *RolesHandlers) GetAllRoles(c *fiber.Ctx) error {
-	roles, err := h.RolesService.GetAllRoles()
+	roles, err := h.rolesServices.GetAllRoles()
 	if err != nil {
-		return h.Http.InternalServerError(c, "Errore nel recuperare i ruoli")
+		return h.http.InternalServerError(c, "Errore nel recuperare i ruoli")
 	}
 
 	// Check if roles is empty
 	if len(roles) == 0 {
-		return h.Http.NotFound(c, "Ruoli non trovati")
+		return h.http.NotFound(c, "Ruoli non trovati")
 	}
 
-	return h.Http.Success(c, roles, "Ruoli recuperati")
+	return h.http.Success(c, roles, "Ruoli recuperati")
 }
 
+// GetRole handles the retrieval of a role by its ID.
 func (h *RolesHandlers) GetRole(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "id")
 
 	if id == 0 {
-		return h.Http.BadRequest(c, "Specificare l'id del ruolo")
+		return h.http.BadRequest(c, "Specificare l'id del ruolo")
 	}
 
 	// Get role
-	role, err := h.RolesService.GetRole(id)
+	role, err := h.rolesServices.GetRole(id)
 	if err != nil {
-		return h.Http.NotFound(c, "Ruolo non trovato")
+		return h.http.NotFound(c, "Ruolo non trovato")
 	}
 
-	return h.Http.Success(c, []interface{}{role}, "Ruolo recuperato")
+	return h.http.Success(c, []interface{}{role}, "Ruolo recuperato")
 }
 
+// GerRolePermissions handles the retrieval of the permissions of a role by its ID.
 func (h *RolesHandlers) GerRolePermissions(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "id")
 
 	if id == 0 {
-		return h.Http.BadRequest(c, "Specificare l'id del ruolo")
+		return h.http.BadRequest(c, "Specificare l'id del ruolo")
 	}
 
 	// Get role
-	role, err := h.RolesService.GetRolePermissions(id)
+	role, err := h.rolesServices.GetRolePermissions(id)
 	if err != nil {
-		return h.Http.NotFound(c, "Ruolo non trovato")
+		return h.http.NotFound(c, "Ruolo non trovato")
 	}
 
-	return h.Http.Success(c, role, "Permessi recuperati")
+	return h.http.Success(c, role, "Permessi recuperati")
 }
 
+// UpdateRole handles the update of a role.
 func (h *RolesHandlers) UpdateRole(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "id")
 	role := new(entities.UpdateRoles)
-	if err := h.Parser.ParseData(c, role); err != nil {
-		return h.Http.BadRequest(c, "Errore nella gestione dei dati")
+	if err := h.parser.ParseData(c, role); err != nil {
+		return h.http.BadRequest(c, "Errore nella gestione dei dati")
 	}
 
 	// Validate role
 	if err := role.Validate(); err != nil {
-		return h.Http.BadRequest(c, err.Error())
+		return h.http.BadRequest(c, err.Error())
 	}
 
 	//Update role
-	if err := h.RolesService.UpdateRole(id, role); err != nil {
-		return h.Http.NotFound(c, "Ruolo non trovato")
+	if err := h.rolesServices.UpdateRole(id, role); err != nil {
+		return h.http.NotFound(c, "Ruolo non trovato")
 	}
 
-	return h.Http.Success(c, []interface{}{role}, "Ruolo aggiornato")
+	return h.http.Success(c, []interface{}{role}, "Ruolo aggiornato")
 }
 
+// DeleteRole handles the deletion of a role.
 func (h *RolesHandlers) DeleteRole(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "id")
 
 	if id == 0 {
-		return h.Http.BadRequest(c, "Specificare l'id del ruolo")
+		return h.http.BadRequest(c, "Specificare l'id del ruolo")
 	}
 
 	// Get role
-	_, err := h.RolesService.GetRole(id)
+	_, err := h.rolesServices.GetRole(id)
 	if err != nil {
-		return h.Http.NotFound(c, "Ruolo non trovato")
+		return h.http.NotFound(c, "Ruolo non trovato")
 	}
 
 	// Delete role
-	if err := h.RolesService.DeleteRole(id); err != nil {
-		return h.Http.NotFound(c, "Ruolo non trovato")
+	if err := h.rolesServices.DeleteRole(id); err != nil {
+		return h.http.NotFound(c, "Ruolo non trovato")
 	}
 
-	return h.Http.Success(c, nil, "Ruolo eliminato")
+	return h.http.Success(c, nil, "Ruolo eliminato")
 }

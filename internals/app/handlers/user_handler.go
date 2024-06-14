@@ -8,160 +8,150 @@ import (
 )
 
 type UserHandlers struct {
-	Parser   ports.ParserAdapters
-	Http     ports.HttpAdapters
-	Services ports.UserServices
+	parser ports.ParserAdapters
+	http   ports.HttpAdapters
+	user   ports.UserServices
+}
+
+// NewUserHandlers creates a new UserHandlers struct.
+func NewUserHandlers(parser ports.ParserAdapters, http ports.HttpAdapters, services ports.UserServices) *UserHandlers {
+	return &UserHandlers{
+		parser: parser,
+		http:   http,
+		user:   services,
+	}
 }
 
 // CreateUser handles the creation of a new user.
-//
-// It takes a fiber.Ctx parameter `c` representing the HTTP request context.
-// It returns an error indicating whether the user creation was successful or not.
 func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	user := new(entities.User)
-	if err := h.Parser.ParseData(c, user); err != nil {
-		return h.Http.BadRequest(c, "Errore nella gestione dei dati")
+	if err := h.parser.ParseData(c, user); err != nil {
+		return h.http.BadRequest(c, "Errore nella gestione dei dati")
 	}
 
 	//Validate user
 	if err := user.Validate(); err != nil {
-		return h.Http.BadRequest(c, err.Error())
+		return h.http.BadRequest(c, err.Error())
 	}
 
 	// Hash password
-	hashedPassword, err := h.Services.EcnrypPassword(user.Password)
+	hashedPassword, err := h.user.EcnrypPassword(user.Password)
 	if err != nil {
-		return h.Http.InternalServerError(c, "Error hashing password")
+		return h.http.InternalServerError(c, "Error hashing password")
 	}
 	user.Password = hashedPassword
 
 	// Create user
-	if err := h.Services.CreateUser(user); err != nil {
-		return h.Http.InternalServerError(c, "Error creating user")
+	if err := h.user.CreateUser(user); err != nil {
+		return h.http.InternalServerError(c, "Error creating user")
 	}
 
 	user.RemovePassword()
-	return h.Http.Success(c, []interface{}{user}, "User created")
+	return h.http.Success(c, []interface{}{user}, "User created")
 }
 
 // Login handles the login process for a user.
-//
-// It takes a fiber.Ctx parameter `c` representing the HTTP request context.
-// It returns an error indicating whether the login was successful or not.
 func (h *UserHandlers) Login(c *fiber.Ctx) error {
 	user := new(entities.User)
-	if err := h.Parser.ParseData(c, user); err != nil {
-		return h.Http.BadRequest(c, "Errore nella gestione dei dati")
+	if err := h.parser.ParseData(c, user); err != nil {
+		return h.http.BadRequest(c, "Errore nella gestione dei dati")
 	}
 
 	//Validate user
 	if err := user.ValidateLogin(); err != nil {
-		return h.Http.BadRequest(c, err.Error())
+		return h.http.BadRequest(c, err.Error())
 	}
 
 	provided_password := user.Password
 	//Search for user
-	if err := h.Services.GetUserByEmail(user); err != nil {
-		return h.Http.Unauthorized(c)
+	if err := h.user.GetUserByEmail(user); err != nil {
+		return h.http.Unauthorized(c)
 	}
 
 	//Compare Password
-	if err := h.Services.ComparePassword(user.Password, provided_password); err != nil {
-		return h.Http.Unauthorized(c)
+	if err := h.user.ComparePassword(user.Password, provided_password); err != nil {
+		return h.http.Unauthorized(c)
 	}
 
 	//Create Session
-	if err := h.Services.SetSession(c, user); err != nil {
-		return h.Http.InternalServerError(c, "Error creating session")
+	if err := h.user.SetSession(c, user); err != nil {
+		return h.http.InternalServerError(c, "Error creating session")
 	}
 
 	user.RemovePassword()
-	return h.Http.Success(c, []interface{}{user}, "Login successful")
+	return h.http.Success(c, []interface{}{user}, "Login successful")
 }
 
 // Logout handles the logout process for a user.
-//
-// It takes a fiber.Ctx parameter `c` representing the HTTP request context.
-// It returns an error indicating whether the logout was successful or not.
 func (h *UserHandlers) Logout(c *fiber.Ctx) error {
 	user := utils.GetLocalUser(c)
 
-	if err := h.Services.DeleteSession(c, user.ID); err != nil {
-		return h.Http.InternalServerError(c, "Error deleting session")
+	if err := h.user.DeleteSession(c, user.ID); err != nil {
+		return h.http.InternalServerError(c, "Error deleting session")
 	}
 
 	// Clear the cookie
 	c.ClearCookie("Authorization")
 
-	return h.Http.Success(c, nil, "Logout successful")
+	return h.http.Success(c, nil, "Logout successful")
 }
 
 // GetUsers handles the retrieval of all users.
-//
-// It takes a fiber.Ctx parameter `c` representing the HTTP request context.
-// It returns an error indicating whether the retrieval was successful or not.
 func (u *UserHandlers) GetUsers(c *fiber.Ctx) error {
-	users, err := u.Services.GetAllUsers()
+	users, err := u.user.GetAllUsers()
 	if err != nil {
-		return u.Http.InternalServerError(c, err.Error())
+		return u.http.InternalServerError(c, err.Error())
 	}
-	return u.Http.Success(c, users, "Utenti recuperati correttamente")
+	return u.http.Success(c, users, "Utenti recuperati correttamente")
 }
 
+// UpdateUser handles the update of a user.
 func (u *UserHandlers) UpdateUser(c *fiber.Ctx) error {
 	// Check if user exists
 	user := new(entities.User)
 	user.ID = utils.GetUintParam(c, "id")
-	if err := u.Services.GetUserById(user); err != nil {
-		return u.Http.NotFound(c, "Utente non trovato")
+	if err := u.user.GetUserById(user); err != nil {
+		return u.http.NotFound(c, "Utente non trovato")
 	}
 
 	newUser := new(entities.UpdateUser)
-	if err := u.Parser.ParseData(c, newUser); err != nil {
-		return u.Http.BadRequest(c, err.Error())
+	if err := u.parser.ParseData(c, newUser); err != nil {
+		return u.http.BadRequest(c, err.Error())
 	}
 
 	// update user
-	user, err := u.Services.UpdateUser(user.ID, newUser)
+	user, err := u.user.UpdateUser(user.ID, newUser)
 	if err != nil {
-		return u.Http.InternalServerError(c, err.Error())
+		return u.http.InternalServerError(c, err.Error())
 	}
 
-	return u.Http.Success(c, []interface{}{user}, "User updated")
+	return u.http.Success(c, []interface{}{user}, "User updated")
 }
 
 // DeleteUser handles the deletion of a user.
-//
-// It takes a fiber.Ctx parameter `c` representing the HTTP request context.
-// It returns an error indicating whether the user deletion was successful or not.
-//
-// The function retrieves the user from the Firebase local context, deletes the user,
-// and removes all sessions associated with the user. If any error occurs during
-// the process, an internal server error is returned. Otherwise, a success message
-// is returned indicating that the user was deleted successfully.
 func (u *UserHandlers) DeleteUser(c *fiber.Ctx) error {
 	user := new(entities.User)
 	user.ID = utils.GetUintParam(c, "id")
 
 	// Get user
-	if err := u.Services.GetUserById(user); err != nil {
-		return u.Http.NotFound(c, "User not found")
+	if err := u.user.GetUserById(user); err != nil {
+		return u.http.NotFound(c, "User not found")
 	}
 
 	// Check if user is an owner
 	if user.Role.Name == "owner" {
-		return u.Http.BadRequest(c, "You can't delete the owner")
+		return u.http.BadRequest(c, "You can't delete the owner")
 	}
 
 	// Delete user
-	if err := u.Services.DeleteUser(user); err != nil {
-		return u.Http.InternalServerError(c, err.Error())
+	if err := u.user.DeleteUser(user); err != nil {
+		return u.http.InternalServerError(c, err.Error())
 	}
 
 	// Remove session
-	if err := u.Services.DeleteAllSessions(c, user.ID); err != nil {
-		return u.Http.InternalServerError(c, err.Error())
+	if err := u.user.DeleteAllSessions(c, user.ID); err != nil {
+		return u.http.InternalServerError(c, err.Error())
 	}
 
-	return u.Http.Success(c, nil, "User deleted successfully!")
+	return u.http.Success(c, nil, "User deleted successfully!")
 }
