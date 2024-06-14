@@ -13,8 +13,15 @@ import (
 )
 
 type UserServices struct {
-	DB    *gorm.DB
-	Cache ports.CacheAdapters
+	db    *gorm.DB
+	cache ports.CacheAdapters
+}
+
+func NewUserServices(db *gorm.DB, cache ports.CacheAdapters) *UserServices {
+	return &UserServices{
+		db:    db,
+		cache: cache,
+	}
 }
 
 func (s *UserServices) EcnrypPassword(password string) (string, error) {
@@ -31,14 +38,14 @@ func (s *UserServices) ComparePassword(hashedPassword, password string) error {
 }
 
 func (s *UserServices) CreateUser(user *entities.User) error {
-	return s.DB.
+	return s.db.
 		Model(user).
 		Create(user).
 		Error
 }
 
 func (s *UserServices) DeleteUser(u *entities.User) error {
-	return s.DB.
+	return s.db.
 		Model(u).
 		Where("id = ?", u.ID).
 		Delete(u).
@@ -47,7 +54,7 @@ func (s *UserServices) DeleteUser(u *entities.User) error {
 
 func (s *UserServices) GetAllUsers() ([]entities.User, error) {
 	var users []entities.User
-	return users, s.DB.
+	return users, s.db.
 		Model(&users).
 		Preload("Role").
 		Select("ID", "name", "surname", "email", "created_at", "updated_at", "role_id").
@@ -56,7 +63,7 @@ func (s *UserServices) GetAllUsers() ([]entities.User, error) {
 }
 
 func (s *UserServices) GetUserById(u *entities.User) error {
-	return s.DB.
+	return s.db.
 		Model(u).
 		Where("id = ?", u.ID).
 		First(u).
@@ -64,7 +71,7 @@ func (s *UserServices) GetUserById(u *entities.User) error {
 }
 
 func (s *UserServices) GetUserByEmail(user *entities.User) error {
-	return s.DB.
+	return s.db.
 		Model(user).
 		Where("email = ?", user.Email).
 		First(user).
@@ -72,13 +79,13 @@ func (s *UserServices) GetUserByEmail(user *entities.User) error {
 }
 
 func (s *UserServices) UpdateUser(id uint, u *entities.UpdateUser) (*entities.User, error) {
-	if err := s.DB.Model(&entities.User{}).Where("id = ?", id).Updates(u).Error; err != nil {
+	if err := s.db.Model(&entities.User{}).Where("id = ?", id).Updates(u).Error; err != nil {
 		return nil, err
 	}
 
 	user := &entities.User{}
 
-	if err := s.DB.
+	if err := s.db.
 		Model(user).
 		Where("id = ?", id).
 		Preload("Role").
@@ -102,7 +109,7 @@ func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
 	session := user.NewSession(c, token)
 
 	//Set session in cache
-	if err := s.Cache.SetCache(&session); err != nil {
+	if err := s.cache.SetCache(&session); err != nil {
 		return err
 	}
 
@@ -119,7 +126,7 @@ func (u *UserServices) GetSessionByToken(token string) (*entities.Session, error
 	}
 
 	// Get all keys for the token
-	keys, err := u.Cache.GetCacheKeys(session)
+	keys, err := u.cache.GetCacheKeys(session)
 	if err != nil {
 		log.Printf("@GetUserSessionByToken: Error getting keys: %v", err)
 		return nil, err
@@ -132,7 +139,7 @@ func (u *UserServices) GetSessionByToken(token string) (*entities.Session, error
 	}
 
 	// Get the session from Redis with key
-	if err := u.Cache.GetCacheFromKey(keys[0], session); err != nil {
+	if err := u.cache.GetCacheFromKey(keys[0], session); err != nil {
 		log.Printf("@GetUserSessionByToken: Error getting session: %v", err)
 		return nil, err
 	}
@@ -149,7 +156,7 @@ func (u *UserServices) DeleteSession(c *fiber.Ctx, id uint) error {
 	}
 
 	// Remove the session from Redis
-	if err := u.Cache.DelCache(&session); err != nil {
+	if err := u.cache.DelCache(&session); err != nil {
 		log.Printf("@DeleteSession: Error removing session: %v", err)
 		return err
 	}
@@ -166,7 +173,7 @@ func (u *UserServices) DeleteAllSessions(c *fiber.Ctx, id uint) error {
 	}
 
 	// Delete the sessions from Redis
-	if err := u.Cache.DelCacheMultiple(&session); err != nil {
+	if err := u.cache.DelCacheMultiple(&session); err != nil {
 		log.Printf("@DeleteAllSessions: Error removing session: %v", err)
 		return err
 	}

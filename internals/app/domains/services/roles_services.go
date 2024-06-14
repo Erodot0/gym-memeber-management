@@ -6,18 +6,24 @@ import (
 )
 
 type RolesServices struct {
-	DB *gorm.DB
+	db *gorm.DB
+}
+
+func NewRolesServices(db *gorm.DB) *RolesServices {
+	return &RolesServices{
+		db: db,
+	}
 }
 
 func (r *RolesServices) CreateRole(role *entities.Roles) error {
-	return r.DB.
+	return r.db.
 		Create(role).
 		Error
 }
 
 func (r *RolesServices) GetAllRoles() ([]entities.Roles, error) {
 	var roles []entities.Roles
-	if err := r.DB.
+	if err := r.db.
 		Preload("Users", func(db *gorm.DB) *gorm.DB {
 			return db.Omit("password")
 		}).
@@ -29,7 +35,7 @@ func (r *RolesServices) GetAllRoles() ([]entities.Roles, error) {
 
 func (r *RolesServices) GetRole(id uint) (*entities.Roles, error) {
 	var role entities.Roles
-	if err := r.DB.
+	if err := r.db.
 		Preload("Users", func(db *gorm.DB) *gorm.DB {
 			return db.Omit("password")
 		}).
@@ -42,7 +48,7 @@ func (r *RolesServices) GetRole(id uint) (*entities.Roles, error) {
 
 func (r *RolesServices) GetRolePermissions(roleID uint) ([]entities.Permissions, error) {
 	var permissions []entities.Permissions
-	if err := r.DB.
+	if err := r.db.
 		Where("role_id = ?", roleID).
 		Find(&permissions).
 		Error; err != nil {
@@ -52,9 +58,9 @@ func (r *RolesServices) GetRolePermissions(roleID uint) ([]entities.Permissions,
 }
 
 func (r *RolesServices) UpdateRole(id uint, role *entities.UpdateRoles) error {
-	return r.DB.Model(&entities.Roles{}).Where("id = ?", id).Updates(role).Error
+	return r.db.Model(&entities.Roles{}).Where("id = ?", id).Updates(role).Error
 }
 
 func (r *RolesServices) DeleteRole(id uint) error {
-	return r.DB.Delete(&entities.Roles{}, id).Error
+	return r.db.Delete(&entities.Roles{}, id).Error
 }

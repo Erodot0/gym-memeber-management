@@ -6,11 +6,17 @@ import (
 )
 
 type MemberServices struct {
-	DB *gorm.DB
+	db *gorm.DB
+}
+
+func NewMemberServices(db *gorm.DB) *MemberServices {
+	return &MemberServices{
+		db: db,
+	}
 }
 
 func (m *MemberServices) CreateMember(member *entities.Member) error {
-	tx := m.DB.Begin()
+	tx := m.db.Begin()
 	if err := tx.Create(member).Error; err != nil {
 		tx.Rollback()
 		return err
@@ -24,7 +30,7 @@ func (m *MemberServices) CreateMember(member *entities.Member) error {
 }
 
 func (m *MemberServices) UpdateMember(id uint, member *entities.UpdateMember) error {
-	return m.DB.
+	return m.db.
 		Model(entities.Member{}).
 		Where("id = ?", id).
 		Updates(member).Error
@@ -32,7 +38,7 @@ func (m *MemberServices) UpdateMember(id uint, member *entities.UpdateMember) er
 
 func (m *MemberServices) GetAllMembers() ([]entities.Member, error) {
 	var members []entities.Member
-	if err := m.DB.
+	if err := m.db.
 		Preload("Contacts").
 		Preload("Address").
 		Preload("Subscription", "is_active = true").
@@ -45,7 +51,7 @@ func (m *MemberServices) GetAllMembers() ([]entities.Member, error) {
 
 func (m *MemberServices) GetMemberById(id uint) (entities.Member, error) {
 	var member entities.Member
-	if err := m.DB.
+	if err := m.db.
 		Preload("Contacts").
 		Preload("Address").
 		Preload("Subscription", "is_active = true").
@@ -59,7 +65,7 @@ func (m *MemberServices) GetMemberById(id uint) (entities.Member, error) {
 func (m *MemberServices) DeleteMember(id uint) error {
 	member := new(entities.Member)
 	member.ID = id
-	return m.DB.
+	return m.db.
 		Select("Contacts", "Address", "Subscription").
 		Delete(member).
 		Error
@@ -67,7 +73,7 @@ func (m *MemberServices) DeleteMember(id uint) error {
 
 func (m *MemberServices) CreateMemberSubscription(user_id uint, subscription *entities.Subscription) error {
 	subscription.UserID = user_id
-	return m.DB.
+	return m.db.
 		Model(entities.Subscription{}).
 		Create(subscription).
 		Error
@@ -75,7 +81,7 @@ func (m *MemberServices) CreateMemberSubscription(user_id uint, subscription *en
 
 func (m *MemberServices) GetAllSubscriptions(id uint) ([]entities.Subscription, error) {
 	var subscriptions []entities.Subscription
-	if err := m.DB.
+	if err := m.db.
 		Model(entities.Subscription{}).
 		Where("user_id = ?", id).
 		Find(&subscriptions).
@@ -87,7 +93,7 @@ func (m *MemberServices) GetAllSubscriptions(id uint) ([]entities.Subscription, 
 
 func (m *MemberServices) GetSubscriptionById(id uint, sub_id uint) ([]entities.Subscription, error) {
 	var subscriptions []entities.Subscription
-	if err := m.DB.
+	if err := m.db.
 		Model(entities.Subscription{}).
 		Where("user_id = ? AND id = ?", id, sub_id).
 		First(&subscriptions).
@@ -99,7 +105,7 @@ func (m *MemberServices) GetSubscriptionById(id uint, sub_id uint) ([]entities.S
 
 func (m *MemberServices) UpdateSubscription(user_id uint, sub_id uint, subscription *entities.UpdateSubscription) ([]entities.Subscription, error) {
 	var subscriptions []entities.Subscription
-	if err := m.DB.
+	if err := m.db.
 		Model(entities.Subscription{}).
 		Where("user_id = ? AND id = ?", user_id, sub_id).
 		Updates(subscription).
@@ -111,7 +117,7 @@ func (m *MemberServices) UpdateSubscription(user_id uint, sub_id uint, subscript
 }
 
 func (m *MemberServices) DeleteSubscription(user_id uint, sub_id uint) error {
-	return m.DB.
+	return m.db.
 		Where("user_id = ? AND id = ? AND deleted_at IS NULL", user_id, sub_id).
 		Delete(&entities.Subscription{}).
 		Error
