@@ -3,7 +3,6 @@ package routes
 import (
 	primary "github.com/Erodot0/gym-memeber-management/internals/adapters/primary"
 	secondary "github.com/Erodot0/gym-memeber-management/internals/adapters/secondary"
-	"github.com/Erodot0/gym-memeber-management/internals/app/domains/ports"
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/services"
 	"github.com/Erodot0/gym-memeber-management/internals/app/handlers"
 	"github.com/Erodot0/gym-memeber-management/internals/app/tools/middlewares"
@@ -24,7 +23,7 @@ type Routes struct {
 	// Handlers
 	permissionHandlers *handlers.PermissionsHandler
 	memberHandlers     *handlers.MembersHandlers
-	userHandlers       ports.UserHandlers
+	userHandlers       *handlers.UserHandlers
 	roleHandlers       *handlers.RolesHandlers
 
 	// Routes
