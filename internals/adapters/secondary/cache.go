@@ -12,6 +12,12 @@ type CacheServices struct {
 	CacheClient *redis.Client
 }
 
+func NewCacheServices(cacheClient *redis.Client) *CacheServices {
+	return &CacheServices{
+		CacheClient: cacheClient,
+	}
+}
+
 func (c *CacheServices) SetCache(data ports.CachePort) error {
 	// Marshal the data
 	bytes, err := json.Marshal(data)

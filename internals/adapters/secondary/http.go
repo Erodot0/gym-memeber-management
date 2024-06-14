@@ -12,6 +12,10 @@ type Response struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
+func NewHttpServices() *HttpServices {
+	return &HttpServices{}
+}
+
 // 200 OK
 func (h *HttpServices) Success(c *fiber.Ctx, data interface{}, message string) error {
 	return c.Status(fiber.StatusOK).JSON(Response{

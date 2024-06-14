@@ -9,6 +9,10 @@ import (
 
 type ErrorHandler struct{}
 
+func NewErrorHandler() *ErrorHandler {
+	return &ErrorHandler{}
+}
+
 func (h *ErrorHandler) ParseData(c *fiber.Ctx, target interface{}) error {
 	err := json.Unmarshal(c.Body(), target)
 	if err != nil {
