@@ -33,8 +33,13 @@ func (s *UserServices) EcnrypPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func (s *UserServices) ComparePassword(hashedPassword, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+func (s *UserServices) ComparePassword(userID uint, password string) error {
+	var user entities.User
+	if err := s.db.Model(&user).Where("id = ?", userID).First(&user).Error; err != nil {
+		return err
+	}
+
+	return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 }
 
 func (s *UserServices) CreateUser(user *entities.User) error {
@@ -57,7 +62,7 @@ func (s *UserServices) GetAllUsers() ([]entities.User, error) {
 	return users, s.db.
 		Model(&users).
 		Preload("Role").
-		Select("ID", "name", "surname", "email", "created_at", "updated_at", "role_id").
+		Omit("password").
 		Find(&users).
 		Error
 }
@@ -65,17 +70,26 @@ func (s *UserServices) GetAllUsers() ([]entities.User, error) {
 func (s *UserServices) GetUserById(u *entities.User) error {
 	return s.db.
 		Model(u).
+		Preload("Role").
+		Omit("password").
 		Where("id = ?", u.ID).
 		First(u).
 		Error
 }
 
-func (s *UserServices) GetUserByEmail(user *entities.User) error {
-	return s.db.
+func (s *UserServices) GetUserByEmail(email string) (*entities.User, error) {
+	user := &entities.User{}
+	if err := s.db.
 		Model(user).
-		Where("email = ?", user.Email).
+		Preload("Role").
+		Omit("password").
+		Where("email = ?", email).
 		First(user).
-		Error
+		Error; err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (s *UserServices) UpdateUser(id uint, u *entities.UpdateUser) (*entities.User, error) {
@@ -84,12 +98,11 @@ func (s *UserServices) UpdateUser(id uint, u *entities.UpdateUser) (*entities.Us
 	}
 
 	user := &entities.User{}
-
 	if err := s.db.
 		Model(user).
 		Where("id = ?", id).
 		Preload("Role").
-		Select("ID", "name", "surname", "email", "created_at", "updated_at", "role_id").
+		Omit("password").
 		First(user).
 		Error; err != nil {
 		return nil, err
