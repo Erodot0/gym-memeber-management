@@ -8,11 +8,16 @@ import (
 )
 
 type MemberMiddlewares struct {
-	Services ports.MemberServices
-	Parser   ports.ParserAdapters
 	Http     ports.HttpAdapters
+	Services ports.MemberServices
 }
 
+func NewMemberMiddlewares(http ports.HttpAdapters, services ports.MemberServices) *MemberMiddlewares {
+	return &MemberMiddlewares{
+		Http:     http,
+		Services: services,
+	}
+}
 
 func (m *MemberMiddlewares) GetMember(c *fiber.Ctx) error {
 	// Get the user ID from the API local params
@@ -29,6 +34,5 @@ func (m *MemberMiddlewares) GetMember(c *fiber.Ctx) error {
 
 	// Print the user
 	utils.SetLocals(c, "member", &member)
-	
 	return c.Next()
 }
