@@ -11,14 +11,16 @@ type UserHandlers struct {
 	parser ports.ParserAdapters
 	http   ports.HttpAdapters
 	user   ports.UserServices
+	roles  ports.RolesServices
 }
 
 // NewUserHandlers creates a new UserHandlers struct.
-func NewUserHandlers(parser ports.ParserAdapters, http ports.HttpAdapters, services ports.UserServices) *UserHandlers {
+func NewUserHandlers(parser ports.ParserAdapters, http ports.HttpAdapters, userServices ports.UserServices, rolesServices ports.RolesServices) *UserHandlers {
 	return &UserHandlers{
 		parser: parser,
 		http:   http,
-		user:   services,
+		user:   userServices,
+		roles:  rolesServices,
 	}
 }
 
@@ -32,6 +34,11 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	//Validate user
 	if err := user.Validate(); err != nil {
 		return h.http.BadRequest(c, err.Error())
+	}
+
+	// Check if role exist
+	if _, err := h.roles.GetRole(user.RoleID); err != nil {
+		return h.http.BadRequest(c, "Il ruolo selezionato non esiste")
 	}
 
 	// Hash password
@@ -52,24 +59,24 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 
 // Login handles the login process for a user.
 func (h *UserHandlers) Login(c *fiber.Ctx) error {
-	user := new(entities.User)
-	if err := h.parser.ParseData(c, user); err != nil {
+	credentials := new(entities.UserLogin)
+	if err := h.parser.ParseData(c, credentials); err != nil {
 		return h.http.BadRequest(c, "Errore nella gestione dei dati")
 	}
 
 	//Validate user
-	if err := user.ValidateLogin(); err != nil {
+	if err := credentials.Validate(); err != nil {
 		return h.http.BadRequest(c, err.Error())
 	}
 
-	provided_password := user.Password
 	//Search for user
-	if err := h.user.GetUserByEmail(user); err != nil {
+	user, err := h.user.GetUserByEmail(credentials.Email); 
+	if err != nil {
 		return h.http.Unauthorized(c)
 	}
 
 	//Compare Password
-	if err := h.user.ComparePassword(user.Password, provided_password); err != nil {
+	if err := h.user.ComparePassword(user.ID, credentials.Password); err != nil {
 		return h.http.Unauthorized(c)
 	}
 
@@ -78,7 +85,6 @@ func (h *UserHandlers) Login(c *fiber.Ctx) error {
 		return h.http.InternalServerError(c, "Error creating session")
 	}
 
-	user.RemovePassword()
 	return h.http.Success(c, []interface{}{user}, "Login successful")
 }
 
@@ -117,6 +123,13 @@ func (u *UserHandlers) UpdateUser(c *fiber.Ctx) error {
 	newUser := new(entities.UpdateUser)
 	if err := u.parser.ParseData(c, newUser); err != nil {
 		return u.http.BadRequest(c, err.Error())
+	}
+
+	// Check if role exist
+	if newUser.RoleID != 0 {
+		if _, err := u.roles.GetRole(newUser.RoleID); err != nil {
+			return u.http.BadRequest(c, "Il ruolo selezionato non esiste")
+		}
 	}
 
 	// update user
