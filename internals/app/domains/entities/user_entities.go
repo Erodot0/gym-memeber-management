@@ -18,10 +18,15 @@ type User struct {
 	Role     *Roles `json:"role,omitempty" gorm:"foreignKey:RoleID;references:ID"`
 }
 
+type UserLogin struct {
+	Email    string `json:"email" gorm:"unique;not null;index"`
+	Password string `json:"password" gorm:"not null"`
+}
+
 type UpdateUser struct {
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
-	RoleID   uint   `json:"role_id"`
+	Name    string `json:"name"`
+	Surname string `json:"surname"`
+	RoleID  uint   `json:"role_id"`
 }
 
 func (u *User) Validate() error {
@@ -43,15 +48,15 @@ func (u *User) Validate() error {
 	return nil
 }
 
-func (u *User) ValidateLogin() error {
+func (u *UserLogin) Validate() error {
 	//Check the email
 	if u.Email == "" {
-		return fmt.Errorf("email is required")
+		return fmt.Errorf("l'email è obbligatoria")
 	}
 
 	//Check the password
 	if u.Password == "" {
-		return fmt.Errorf("password is required")
+		return fmt.Errorf("la password è obbligatoria")
 	}
 
 	return nil
