@@ -17,14 +17,15 @@ type UserServices interface {
 	//   - error: an error if any occurs during the hashing process.
 	EcnrypPassword(password string) (string, error)
 
-	// ComparePassword compares a hashed password with a plaintext password.
+	// ComparePassword compares the input password string with the hashed password in the database.
 	//
 	// Parameters:
-	//   - hashedPassword: the hashed password to compare.
-	//   - password: the plaintext password to compare.
+	//   - userID: the ID of the user whose password is being compared.
+	//   - password: the password string to be compared with the hashed password in the database.
 	//
-	// Return type: error.
-	ComparePassword(hashedPassword, password string) error
+	// Return values:
+	//   - error: an error if any occurs during the comparison process.
+	ComparePassword(userID uint, password string) error
 
 	// CreateUser creates a new user in the database.
 	//
@@ -61,10 +62,10 @@ type UserServices interface {
 	// GetUserByEmail retrieves a user from the database by their email.
 	//
 	// Parameters:
-	//   - user: the user entity to be retrieved, it must contain the email.
+	//   - email: the email of the user to retrieve.
 	//
-	// Return type: error.
-	GetUserByEmail(user *entities.User) error
+	// Return type: *entities.User, error.
+	GetUserByEmail(email string) (*entities.User, error)
 
 	// UpdateUser updates a user in the database.
 	//
