@@ -2,8 +2,11 @@ package services
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
 
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
+	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
@@ -47,7 +50,10 @@ func (p *PermissionsService) ValidateNewPermission(perm *entities.Permissions) e
 		return fmt.Errorf("la tabella non è valida")
 	}
 	// Check if the action is valid
-	if perm.Create > 1 || perm.Update > 2 || perm.Read > 2 || perm.Delete > 2 {
+	if (perm.Create != nil && *perm.Create > uint(1)) ||
+		(perm.Update != nil && *perm.Update > uint(2)) ||
+		(perm.Read != nil && *perm.Read > uint(2)) ||
+		(perm.Delete != nil && *perm.Delete > uint(2)) {
 		return fmt.Errorf("assegnare i permessi correttamente")
 	}
 
@@ -56,7 +62,10 @@ func (p *PermissionsService) ValidateNewPermission(perm *entities.Permissions) e
 
 func (p *PermissionsService) ValidateUpdatePermission(perm *entities.UpdatePermissions) error {
 	// Check if the action is valid
-	if perm.Create > 1 || perm.Update > 2 || perm.Read > 2 || perm.Delete > 2 {
+	if (perm.Create != nil && *perm.Create > uint(1)) ||
+		(perm.Update != nil && *perm.Update > uint(2)) ||
+		(perm.Read != nil && *perm.Read > uint(2)) ||
+		(perm.Delete != nil && *perm.Delete > uint(2)) {
 		return fmt.Errorf("assegnare i permessi correttamente")
 	}
 
@@ -102,14 +111,18 @@ func (p *PermissionsService) DeletePermission(id uint) error {
 	return p.db.Delete(&entities.Permissions{}, id).Error
 }
 
-func (p *PermissionsService) HasPermission(table_name string, roleId uint, action string) (bool, error) {
-	perm := &entities.Permissions{}
-	return p.db.
-		Where(
-			"table_name = ? AND role_id = ? AND action = ?",
-			table_name, roleId, action).
-		First(perm).
-		Error == nil, nil
+func (p *PermissionsService) HasPermission(table_name string, roleId uint, action string) (uint, error) {
+	var perm uint
+
+	if err := p.db.
+		Model(&entities.Permissions{}).
+		Select(action).
+		Where("table_name = ? AND role_id = ?", table_name, roleId).
+		Scan(&perm).Error; err != nil {
+		return 0, err
+	}
+
+	return perm, nil
 }
 
 func (p *PermissionsService) CheckPermissionExists(table_name string, roleId uint) (bool, error) {
@@ -121,4 +134,43 @@ func (p *PermissionsService) CheckPermissionExists(table_name string, roleId uin
 		return false, err
 	}
 	return count > 0, nil
+}
+
+func (p *PermissionsService) GetTableList() ([]string, error) {
+	return p.db.Migrator().GetTables()
+}
+
+func (p *PermissionsService) GetRequestedActionAndTable(c *fiber.Ctx) (action string, table string) {
+	method := c.Method()
+	endpoint := c.Path()
+
+	// Get the requested action
+	switch method {
+	case "POST":
+		action = "create"
+	case "GET":
+		action = "read"
+	case "PUT":
+		action = "update"
+	case "DELETE":
+		action = "delete"
+	default:
+		action = ""
+	}
+
+	segments := strings.Split(endpoint, "/")[4:]
+
+	// Regular expression to match only segments with letters
+	regex := regexp.MustCompile(`^[a-zA-Z]+$`)
+
+	var result []string
+	for _, segment := range segments {
+		if regex.MatchString(segment) {
+			result = append(result, segment)
+		}
+	}
+
+	// Clean the endpoint
+	table = result[len(result)-1]
+	return action, table
 }

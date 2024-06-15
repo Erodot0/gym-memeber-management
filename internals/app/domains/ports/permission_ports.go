@@ -1,6 +1,9 @@
 package ports
 
-import "github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
+import (
+	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
+	"github.com/gofiber/fiber/v2"
+)
 
 type PermissionsServices interface {
 
@@ -102,13 +105,13 @@ type PermissionsServices interface {
 	// Parameters:
 	//   - table: the name of the table to check permissions for.
 	//   - roleId: the ID of the role to check permissions for.
-	//   - action: the action to check permissions for (create, read, update, delete).
+	//   - action: the action to check permissions for.
 	//
 	// Returns:
-	//   - bool: true if the permission exists, false otherwise.
+	//   - uint: the permission value for the specified role and table.
 	//   - error: an error if the permission check fails, nil otherwise.
 	//
-	HasPermission(table string, roleId uint, action string) (bool, error)
+	HasPermission(table_name string, roleId uint, action string) (uint, error)
 
 	// CheckPermissionExists checks if a permission exists for a specific role and table.
 	//
@@ -121,4 +124,23 @@ type PermissionsServices interface {
 	//   - error: an error if the permission check fails, nil otherwise.
 	//
 	CheckPermissionExists(table string, roleId uint) (bool, error)
+
+	// GetTableList returns a list of all tables in the system.
+	//
+	// Returns:
+	//   - []string: a slice of strings representing the list of tables.
+	//   - error: an error if the table list retrieval fails, nil otherwise.
+	//
+	GetTableList() ([]string, error)
+
+	// GetRequestedActionAndTable retrieves the requested action and table from the given fiber context.
+	//
+	// Parameters:
+	//   - c: a pointer to a fiber.Ctx object representing the context of the request.
+	//
+	// Returns:
+	//   - action: a string representing the requested action.
+	//   - table: a string representing the requested table.
+	//
+	GetRequestedActionAndTable(c *fiber.Ctx) (action string, table string)
 }
