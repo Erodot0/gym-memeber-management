@@ -70,7 +70,7 @@ func (h *UserHandlers) Login(c *fiber.Ctx) error {
 	}
 
 	//Search for user
-	user, err := h.user.GetUserByEmail(credentials.Email); 
+	user, err := h.user.GetUserByEmail(credentials.Email)
 	if err != nil {
 		return h.http.Unauthorized(c)
 	}
@@ -113,11 +113,20 @@ func (u *UserHandlers) GetUsers(c *fiber.Ctx) error {
 
 // UpdateUser handles the update of a user.
 func (u *UserHandlers) UpdateUser(c *fiber.Ctx) error {
+	// Get Local User and permissions
+	loggedUser := utils.GetLocalUser(c)
+	permission := utils.GetLocalPermission(c)
+
 	// Check if user exists
 	user := new(entities.User)
 	user.ID = utils.GetUintParam(c, "id")
 	if err := u.user.GetUserById(user); err != nil {
 		return u.http.NotFound(c, "Utente non trovato")
+	}
+
+	// Check if user can update
+	if permission == 2 && user.ID != loggedUser.ID {
+		return u.http.Forbidden(c)
 	}
 
 	newUser := new(entities.UpdateUser)
@@ -143,8 +152,17 @@ func (u *UserHandlers) UpdateUser(c *fiber.Ctx) error {
 
 // DeleteUser handles the deletion of a user.
 func (u *UserHandlers) DeleteUser(c *fiber.Ctx) error {
+	// Get Local User and permissions
+	loggedUser := utils.GetLocalUser(c)
+	permission := utils.GetLocalPermission(c)
+
 	user := new(entities.User)
 	user.ID = utils.GetUintParam(c, "id")
+
+	// Check if user can update
+	if permission == 2 && user.ID != loggedUser.ID {
+		return u.http.Forbidden(c)
+	}
 
 	// Get user
 	if err := u.user.GetUserById(user); err != nil {
