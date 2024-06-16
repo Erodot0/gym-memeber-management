@@ -27,6 +27,7 @@ type Routes struct {
 	roleHandlers       *handlers.RolesHandlers
 
 	// Routes
+	authRoutes      fiber.Router
 	publicRoutes    fiber.Router
 	protectedRoutes fiber.Router
 }
@@ -46,11 +47,11 @@ func NewRoutes(app *fiber.App, db *gorm.DB, cache *redis.Client) *Routes {
 	permissionsServices := services.NewPermissionsService(db)
 
 	// Middlewares
-	userMiddlewares := middlewares.NewUserMiddlewares(httpAdapters, userServices)
-	memberMiddlewares := middlewares.NewMemberMiddlewares(parserAdapters, httpAdapters, memberServices)
+	userMiddlewares := middlewares.NewUserMiddlewares(httpAdapters, userServices, permissionsServices)
+	memberMiddlewares := middlewares.NewMemberMiddlewares(httpAdapters, memberServices)
 
 	// Handlers
-	userHandlers := handlers.NewUserHandlers(parserAdapters, httpAdapters, userServices)
+	userHandlers := handlers.NewUserHandlers(parserAdapters, httpAdapters, userServices, rolesServices)
 	memberHandlers := handlers.NewMembersHandlers(parserAdapters, httpAdapters, memberServices)
 	rolesHandlers := handlers.NewRolesHandlers(parserAdapters, httpAdapters, rolesServices)
 	permissionsHandlers := handlers.NewPermissionsHandler(parserAdapters, httpAdapters, permissionsServices)
@@ -62,10 +63,9 @@ func NewRoutes(app *fiber.App, db *gorm.DB, cache *redis.Client) *Routes {
 	v1 := api.Group("/v1")
 
 	// Public routes group
+	authRoutes := v1.Group("/auth")
 	publicApi := v1.Group("/public")
-
-	// Protected routes group with user authorization middleware
-	protectedApi := v1.Group("/protected", userMiddlewares.AuthorizeUser)
+	protectedApi := v1.Group("/protected", userMiddlewares.AuthorizeUser, userMiddlewares.CheckPermissions)
 
 	return &Routes{
 		app:   app,
@@ -83,6 +83,7 @@ func NewRoutes(app *fiber.App, db *gorm.DB, cache *redis.Client) *Routes {
 		permissionHandlers: permissionsHandlers,
 
 		// Routes
+		authRoutes:      authRoutes,
 		publicRoutes:    publicApi,
 		protectedRoutes: protectedApi,
 	}
