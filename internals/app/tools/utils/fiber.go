@@ -48,6 +48,14 @@ func GetLocalRole(c *fiber.Ctx) *entities.Roles {
 	return c.Locals("role").(*entities.Roles)
 }
 
+// GetLocalPermission retrieves the local permission from the fiber context.
+//
+// Parameter: c *fiber.Ctx
+// Return type: *entities.Permission
+func GetLocalPermission(c *fiber.Ctx) uint {
+	return c.Locals("permission").(uint)
+}
+
 // GetStringParam returns the value of the specified parameter from the API request.
 //
 // Parameters:
