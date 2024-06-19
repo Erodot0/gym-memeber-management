@@ -62,22 +62,38 @@ func (s *UserServices) DeleteUser(u *entities.User) error {
 }
 
 func (s *UserServices) GetAllUsers() ([]entities.User, error) {
+	systemUserEmail := os.Getenv("SYS_USER_EMAIL")
+
 	var users []entities.User
 	return users, s.db.
 		Model(&users).
 		Preload("Role").
 		Omit("password").
+		Where("email != ?", systemUserEmail).
 		Find(&users).
 		Error
 }
 
 func (s *UserServices) GetUserById(u *entities.User) error {
+	systemUserEmail := os.Getenv("SYS_USER_EMAIL")
+
 	return s.db.
 		Model(u).
 		Preload("Role").
 		Omit("password").
-		Where("id = ?", u.ID).
+		Where("id = ? AND email != ?", u.ID, systemUserEmail).
 		First(u).
+		Error
+}
+
+func (s *UserServices) GetUserForLogin(id uint) (*entities.User, error) {
+	user := &entities.User{}
+	return user, s.db.
+		Model(user).
+		Preload("Role").
+		Omit("password").
+		Where("id = ?", id).
+		First(user).
 		Error
 }
 
