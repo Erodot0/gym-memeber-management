@@ -103,6 +103,12 @@ func (h *RolesHandlers) UpdateRole(c *fiber.Ctx) error {
 		return h.http.BadRequest(c, err.Error())
 	}
 
+	// Get role
+	_, err := h.rolesServices.GetRole(id)
+	if err != nil {
+		return h.http.NotFound(c, "Ruolo non trovato")
+	}
+
 	//Update role
 	if err := h.rolesServices.UpdateRole(id, role); err != nil {
 		return h.http.NotFound(c, "Ruolo non trovato")
