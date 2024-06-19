@@ -26,11 +26,14 @@ func (r *RolesServices) CreateRole(role *entities.Roles) error {
 }
 
 func (r *RolesServices) GetAllRoles() ([]entities.Roles, error) {
+	systemRoleName := os.Getenv("SYS_ROLE_NAME")
+
 	var roles []entities.Roles
 	if err := r.db.
 		Preload("Users", func(db *gorm.DB) *gorm.DB {
 			return db.Omit("password")
 		}).
+		Where("name != ?", systemRoleName).
 		Find(&roles).Error; err != nil {
 		return nil, err
 	}
@@ -38,11 +41,14 @@ func (r *RolesServices) GetAllRoles() ([]entities.Roles, error) {
 }
 
 func (r *RolesServices) GetRole(id uint) (*entities.Roles, error) {
+	systemRoleName := os.Getenv("SYS_ROLE_NAME")
+
 	var role entities.Roles
 	if err := r.db.
 		Preload("Users", func(db *gorm.DB) *gorm.DB {
 			return db.Omit("password")
 		}).
+		Where("name != ?", systemRoleName).
 		First(&role, id).
 		Error; err != nil {
 		return nil, err
@@ -65,9 +71,11 @@ func (r *RolesServices) GetRoleByName(name string) (*entities.Roles, error) {
 }
 
 func (r *RolesServices) GetRolePermissions(roleID uint) ([]entities.Permissions, error) {
+	systemRoleName := os.Getenv("SYS_ROLE_NAME")
+
 	var permissions []entities.Permissions
 	if err := r.db.
-		Where("role_id = ?", roleID).
+		Where("role_id = ? AND role_name != ?", roleID, systemRoleName).
 		Find(&permissions).
 		Error; err != nil {
 		return nil, err
@@ -76,11 +84,20 @@ func (r *RolesServices) GetRolePermissions(roleID uint) ([]entities.Permissions,
 }
 
 func (r *RolesServices) UpdateRole(id uint, role *entities.UpdateRoles) error {
-	return r.db.Model(&entities.Roles{}).Where("id = ?", id).Updates(role).Error
+	systemRoleName := os.Getenv("SYS_ROLE_NAME")
+	return r.db.
+		Model(&entities.Roles{}).
+		Where("id = ? AND name != ?", id, systemRoleName).
+		Updates(role).Error
 }
 
 func (r *RolesServices) DeleteRole(id uint) error {
-	return r.db.Delete(&entities.Roles{}, id).Error
+	systemRoleName := os.Getenv("SYS_ROLE_NAME")
+
+	return r.db.
+		Where("name != ?", systemRoleName).
+		Delete(&entities.Roles{}, id).
+		Error
 }
 
 func (r *RolesServices) CreateSystemRole() error {
