@@ -31,6 +31,17 @@ type RolesServices interface {
 	//
 	GetRole(id uint) (*entities.Roles, error)
 
+	// GetRoleByName retrieves a role from the system by its name.
+	//
+	// Parameters:
+	// - name: The name of the role to retrieve.
+	//
+	// Returns:
+	// - *entities.Roles: A pointer to the Roles struct representing the retrieved role, or nil if not found.
+	// - error: An error object if there was an issue retrieving the role, otherwise nil.
+	//
+	GetRoleByName(name string) (*entities.Roles, error)
+
 	// GetRolePermissions retrieves the permissions of a role from the system by its ID.
 	//
 	// Parameters:
@@ -62,4 +73,11 @@ type RolesServices interface {
 	// - error: An error object if there was an issue deleting the role, otherwise nil.
 	//
 	DeleteRole(id uint) error
+
+	// CreateSystemRole creates a new system role in the system.
+	//
+	// Returns:
+	// - error: An error object if there was an issue creating the system role, otherwise nil.
+	//
+	CreateSystemRole() error
 }
