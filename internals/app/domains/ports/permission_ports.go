@@ -143,4 +143,7 @@ type PermissionsServices interface {
 	//   - table: a string representing the requested table.
 	//
 	GetRequestedActionAndTable(c *fiber.Ctx) (action string, table string)
+
+	// CreateSystemPermissions creates the default permissions for the system role.
+	CreateSystemPermissions() error
 }

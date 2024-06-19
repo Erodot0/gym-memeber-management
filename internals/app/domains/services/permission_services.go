@@ -1,22 +1,28 @@
 package services
 
 import (
+	"errors"
 	"fmt"
+	"log"
+	"os"
 	"regexp"
 	"strings"
 
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
+	"github.com/Erodot0/gym-memeber-management/internals/app/domains/ports"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 type PermissionsService struct {
-	db *gorm.DB
+	db            *gorm.DB
+	rolesServices ports.RolesServices
 }
 
-func NewPermissionsService(db *gorm.DB) *PermissionsService {
+func NewPermissionsService(db *gorm.DB, rolesServices ports.RolesServices) *PermissionsService {
 	return &PermissionsService{
-		db: db,
+		db:            db,
+		rolesServices: rolesServices,
 	}
 }
 
@@ -173,4 +179,89 @@ func (p *PermissionsService) GetRequestedActionAndTable(c *fiber.Ctx) (action st
 	// Clean the endpoint
 	table = result[len(result)-1]
 	return action, table
+}
+
+func (p *PermissionsService) CreateSystemPermissions() error {
+	roleName := os.Getenv("SYS_ROLE_NAME")
+	if roleName == "" {
+		log.Fatal("SYS_ROLE_NAME not found in .env file")
+		return errors.New("SYS_ROLE_NAME not found in .env file")
+	}
+
+	// Get the system role
+	role, err := p.rolesServices.GetRoleByName(roleName)
+	if err != nil {
+		log.Fatal("Error getting system role: ", err)
+		return err
+	}
+
+	fmt.Printf("Role ID: %d\n", role.ID)
+
+	// Check if permissions exists and how many
+	var permissions_count int64
+	err = p.db.Model(&entities.Permissions{}).Where("role_id = ?", role.ID).Count(&permissions_count).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Fatal("Error checking if Permissions exists: ", err)
+		return err
+	}
+
+	fmt.Println(permissions_count)
+
+	// Get the list of tables
+	tables, err := p.GetTableList()
+	if err != nil {
+		log.Fatal("Error getting tables: ", err)
+		return err
+	}
+
+	// Check the lenght between the tables and the permissions
+	if permissions_count < int64(len(tables)) {
+		// start transaction
+		tx := p.db.Begin()
+		if tx.Error != nil {
+			log.Fatal("Error starting transaction: ", tx.Error)
+			return tx.Error
+		}
+
+		// create permissions
+		perm := new(uint)
+		*perm = uint(1)
+
+		for _, table := range tables {
+			// Check if the permission already exists
+			exists, err := p.CheckPermissionExists(table, role.ID)
+			if err != nil {
+				tx.Rollback()
+				log.Fatal("Error checking if Permissions exists: ", err)
+				return err
+			}
+
+			// If the permission already exists, skip it
+			if exists {
+				continue
+			}
+			permission := entities.Permissions{
+				TableName: table,
+				RoleId:    role.ID,
+				Create:    perm,
+				Read:      perm,
+				Update:    perm,
+				Delete:    perm,
+			}
+
+			if err := tx.Create(&permission).Error; err != nil {
+				tx.Rollback()
+				log.Fatal("Error creating permission: ", err)
+				return err
+			}
+		}
+
+		// commit transaction
+		if err := tx.Commit().Error; err != nil {
+			log.Fatal("Error committing transaction: ", err)
+			return err
+		}
+	}
+
+	return nil
 }
