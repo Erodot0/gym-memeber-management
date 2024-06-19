@@ -184,6 +184,12 @@ func (h *MembersHandlers) DeleteMemberSubscription(c *fiber.Ctx) error {
 		return h.http.BadRequest(c, "Specificare l'id dell'iscrizione da eliminare")
 	}
 
+	// Get subrscription
+	_, err := h.memberServices.GetSubscriptionById(member.ID, sub_id)
+	if err != nil {
+		return h.http.NotFound(c, "Iscrizione non trovata")
+	}
+
 	// Delete subrscription
 	if err := h.memberServices.DeleteSubscription(member.ID, sub_id); err != nil {
 		return h.http.NotFound(c, "Iscrizione non trovata")
