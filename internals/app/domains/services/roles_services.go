@@ -75,7 +75,8 @@ func (r *RolesServices) GetRolePermissions(roleID uint) ([]entities.Permissions,
 
 	var permissions []entities.Permissions
 	if err := r.db.
-		Where("role_id = ? AND role_name != ?", roleID, systemRoleName).
+		Joins("JOIN roles ON roles.id = permissions.role_id").
+		Where("roles.name != ? AND permissions.role_id = ?", systemRoleName, roleID).
 		Find(&permissions).
 		Error; err != nil {
 		return nil, err
