@@ -59,6 +59,16 @@ type UserServices interface {
 	//               If the user is not found, an error will be returned.
 	GetUserById(u *entities.User) error
 
+	// GetUserForLogin retrieves a user from the database for login purposes based on the provided ID.
+	//
+	// Parameters:
+	//   - id: the ID of the user to retrieve.
+	//
+	// Return type:
+	//   - *entities.User
+	//
+	GetUserForLogin(id uint) (*entities.User, error)
+
 	// GetUserByEmail retrieves a user from the database by their email.
 	//
 	// Parameters:
