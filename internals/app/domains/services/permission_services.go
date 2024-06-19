@@ -83,18 +83,36 @@ func (p *PermissionsService) CreatePermission(perm *entities.Permissions) error 
 }
 
 func (p *PermissionsService) GetPermission(id uint) (*entities.Permissions, error) {
+	systemRoleName := os.Getenv("SYS_ROLE_NAME")
+
 	perm := &entities.Permissions{}
-	return perm, p.db.First(perm, id).Error
+	err := p.db.
+		Joins("JOIN roles ON roles.id = permissions.role_id").
+		Where("roles.name != ? AND permissions.id = ?", systemRoleName, id).
+		First(perm).
+		Error
+
+	return perm, err
 }
 
 func (p *PermissionsService) GetAllPermissions() ([]entities.Permissions, error) {
+	systemRoleName := os.Getenv("SYS_ROLE_NAME")
+
 	perms := []entities.Permissions{}
-	return perms, p.db.Find(&perms).Error
+	return perms, p.db.
+		Joins("JOIN roles ON roles.id = permissions.role_id").
+		Where("roles.name != ?", systemRoleName).
+		Find(&perms).Error
 }
 
 func (p *PermissionsService) GetPermissionsByRole(roleId uint) ([]entities.Permissions, error) {
+	systemRoleName := os.Getenv("SYS_ROLE_NAME")
+
 	perms := []entities.Permissions{}
-	return perms, p.db.Where("role_id = ?", roleId).Find(&perms).Error
+	return perms, p.db.
+		Joins("JOIN roles ON roles.id = permissions.role_id").
+		Where("roles.name != ? AND permissions.role_id = ?", systemRoleName, roleId).
+		Find(&perms).Error
 }
 
 func (p *PermissionsService) GetPermissionsByTable(table_name string) ([]entities.Permissions, error) {
