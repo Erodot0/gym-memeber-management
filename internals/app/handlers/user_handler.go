@@ -41,6 +41,11 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 		return h.http.BadRequest(c, "Il ruolo selezionato non esiste")
 	}
 
+	// Check if is system role
+	if h.roles.IsSystemRole(user.RoleID) {
+		return h.http.BadRequest(c, "Non puoi creare un utente di sistema")
+	}
+
 	// Hash password
 	hashedPassword, err := h.user.EcnrypPassword(user.Password)
 	if err != nil {
@@ -129,6 +134,7 @@ func (u *UserHandlers) UpdateUser(c *fiber.Ctx) error {
 		return u.http.Forbidden(c)
 	}
 
+	// Parse data from request
 	newUser := new(entities.UpdateUser)
 	if err := u.parser.ParseData(c, newUser); err != nil {
 		return u.http.BadRequest(c, err.Error())
@@ -166,12 +172,7 @@ func (u *UserHandlers) DeleteUser(c *fiber.Ctx) error {
 
 	// Get user
 	if err := u.user.GetUserById(user); err != nil {
-		return u.http.NotFound(c, "User not found")
-	}
-
-	// Check if user is an owner
-	if user.Role.Name == "owner" {
-		return u.http.BadRequest(c, "You can't delete the owner")
+		return u.http.NotFound(c, "Utente non trovato")
 	}
 
 	// Delete user
@@ -184,5 +185,5 @@ func (u *UserHandlers) DeleteUser(c *fiber.Ctx) error {
 		return u.http.InternalServerError(c, err.Error())
 	}
 
-	return u.http.Success(c, nil, "User deleted successfully!")
+	return u.http.Success(c, nil, "Utente eliminato!")
 }
