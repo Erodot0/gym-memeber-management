@@ -4,7 +4,6 @@ import (
 	"log"
 	"slices"
 
-	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/ports"
 	"github.com/Erodot0/gym-memeber-management/internals/app/tools/utils"
 	"github.com/gofiber/fiber/v2"
@@ -44,12 +43,9 @@ func (m *UserMiddlewares) AuthorizeUser(c *fiber.Ctx) error {
 		return m.http.Unauthorized(c)
 	}
 
-	// Create user
-	user := &entities.User{}
-	user.ID = session.UserID
-
-	// Get user from database
-	if err := m.userService.GetUserById(user); err != nil {
+	// Get user
+	user, err := m.userService.GetUserForLogin(session.UserID)
+	if err != nil {
 		log.Printf("@AuthorizeUser: Error getting user: %v", err)
 		return m.http.Unauthorized(c)
 	}
