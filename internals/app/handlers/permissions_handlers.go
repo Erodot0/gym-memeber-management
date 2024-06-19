@@ -8,16 +8,16 @@ import (
 )
 
 type PermissionsHandler struct {
-	permissionsService ports.PermissionsServices
-	http               ports.HttpAdapters
-	parser             ports.ParserAdapters
+	permission ports.PermissionsServices
+	http       ports.HttpAdapters
+	parser     ports.ParserAdapters
 }
 
 func NewPermissionsHandler(parser ports.ParserAdapters, http ports.HttpAdapters, permissionsService ports.PermissionsServices) *PermissionsHandler {
 	return &PermissionsHandler{
-		http:               http,
-		parser:             parser,
-		permissionsService: permissionsService,
+		http:       http,
+		parser:     parser,
+		permission: permissionsService,
 	}
 }
 
@@ -33,11 +33,11 @@ func (p *PermissionsHandler) CreatePermission(c *fiber.Ctx) error {
 		perm.RoleId = id
 	}
 
-	if err := p.permissionsService.ValidateNewPermission(perm); err != nil {
+	if err := p.permission.ValidateNewPermission(perm); err != nil {
 		return p.http.BadRequest(c, err.Error())
 	}
 
-	if err := p.permissionsService.CreatePermission(perm); err != nil {
+	if err := p.permission.CreatePermission(perm); err != nil {
 		return p.http.InternalServerError(c, err.Error())
 	}
 
@@ -57,16 +57,16 @@ func (p *PermissionsHandler) UpdatePermission(c *fiber.Ctx) error {
 	}
 
 	// Check if the permission exists
-	_, err := p.permissionsService.GetPermission(id)
+	_, err := p.permission.GetPermission(id)
 	if err != nil {
 		return p.http.NotFound(c, "Permesso non trovato")
 	}
 
-	if err := p.permissionsService.ValidateUpdatePermission(perm); err != nil {
+	if err := p.permission.ValidateUpdatePermission(perm); err != nil {
 		return p.http.BadRequest(c, err.Error())
 	}
 
-	permission, err := p.permissionsService.UpdatePermission(id, perm)
+	permission, err := p.permission.UpdatePermission(id, perm)
 	if err != nil {
 		return p.http.InternalServerError(c, err.Error())
 	}
@@ -81,7 +81,7 @@ func (p *PermissionsHandler) GetPermission(c *fiber.Ctx) error {
 		return p.http.BadRequest(c, "Specificare l'id del permesso")
 	}
 
-	permission, err := p.permissionsService.GetPermission(id)
+	permission, err := p.permission.GetPermission(id)
 	if err != nil {
 		return p.http.NotFound(c, "Permesso non trovato")
 	}
@@ -91,7 +91,7 @@ func (p *PermissionsHandler) GetPermission(c *fiber.Ctx) error {
 
 // GetPermissions handles the retrieval of all permissions.
 func (p *PermissionsHandler) GetPermissions(c *fiber.Ctx) error {
-	permissions, err := p.permissionsService.GetAllPermissions()
+	permissions, err := p.permission.GetAllPermissions()
 	if err != nil {
 		return p.http.NotFound(c, "Permesso non trovato")
 	}
@@ -111,13 +111,13 @@ func (p *PermissionsHandler) DeletePermission(c *fiber.Ctx) error {
 	}
 
 	// Check if the permission exists
-	_, err := p.permissionsService.GetPermission(id)
+	_, err := p.permission.GetPermission(id)
 	if err != nil {
 		return p.http.NotFound(c, "Permesso non trovato")
 	}
 
 	// Delete the permission
-	if err := p.permissionsService.DeletePermission(id); err != nil {
+	if err := p.permission.DeletePermission(id); err != nil {
 		return p.http.NotFound(c, "Permesso non trovato")
 	}
 
