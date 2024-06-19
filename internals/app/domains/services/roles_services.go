@@ -127,3 +127,27 @@ func (r *RolesServices) CreateSystemRole() error {
 
 	return nil
 }
+
+func (r *RolesServices) GetSystemRole() (*entities.Roles, error) {
+	roleName := os.Getenv("SYS_ROLE_NAME")
+	var role entities.Roles
+	if err := r.db.
+		Where("name = ?", roleName).
+		First(&role).
+		Error; err != nil {
+		return nil, err
+	}
+	return &role, nil
+}
+
+func (r *RolesServices) IsSystemRole(roleID uint) bool {
+	roleName := os.Getenv("SYS_ROLE_NAME")
+	var role entities.Roles
+	if err := r.db.
+		Where("name = ?", roleName).
+		First(&role).
+		Error; err != nil {
+		return false
+	}
+	return role.ID == roleID
+}

@@ -115,4 +115,7 @@ type UserServices interface {
 
 	// CrateSystemUser creates a new system user in the database.
 	CreateSystemUser() error
+
+	// IsSystemUser checks if a user is a system user.
+	IsSystemUser(id uint) bool
 }

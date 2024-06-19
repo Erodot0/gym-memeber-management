@@ -262,3 +262,12 @@ func (u *UserServices) CreateSystemUser() error {
 
 	return nil
 }
+
+func (u *UserServices) IsSystemUser(id uint) bool {
+	email := os.Getenv("SYS_USER_EMAIL")
+	var user entities.User
+	if err := u.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return false
+	}
+	return user.ID == id
+}

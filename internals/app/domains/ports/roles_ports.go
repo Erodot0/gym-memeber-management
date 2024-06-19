@@ -80,4 +80,22 @@ type RolesServices interface {
 	// - error: An error object if there was an issue creating the system role, otherwise nil.
 	//
 	CreateSystemRole() error
+
+	// GetSystemRole retrieves the system role from the system.
+	//
+	// Returns:
+	// - *entities.Roles: A pointer to the Roles struct representing the system role, or nil if not found.
+	// - error: An error object if there was an issue retrieving the system role, otherwise nil.
+	//
+	GetSystemRole() (*entities.Roles, error)
+
+	// IsSystemRole checks if a role is a system role.
+	//
+	// Parameters:
+	// - roleID: The ID of the role to check.
+	//
+	// Returns:
+	// - bool: true if the role is a system role, false otherwise.
+	//
+	IsSystemRole(roleID uint) bool
 }
