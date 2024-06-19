@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"log"
+
 	primary "github.com/Erodot0/gym-memeber-management/internals/adapters/primary"
 	secondary "github.com/Erodot0/gym-memeber-management/internals/adapters/secondary"
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/services"
@@ -41,10 +43,10 @@ func NewRoutes(app *fiber.App, db *gorm.DB, cache *redis.Client) *Routes {
 	parserAdapters := primary.NewErrorHandler()
 
 	// Services
-	userServices := services.NewUserServices(db, cacheAdapters)
 	memberServices := services.NewMemberServices(db)
 	rolesServices := services.NewRolesServices(db)
-	permissionsServices := services.NewPermissionsService(db)
+	userServices := services.NewUserServices(db, cacheAdapters, rolesServices)
+	permissionsServices := services.NewPermissionsService(db, rolesServices)
 
 	// Middlewares
 	userMiddlewares := middlewares.NewUserMiddlewares(httpAdapters, userServices, permissionsServices)
@@ -55,6 +57,21 @@ func NewRoutes(app *fiber.App, db *gorm.DB, cache *redis.Client) *Routes {
 	memberHandlers := handlers.NewMembersHandlers(parserAdapters, httpAdapters, memberServices)
 	rolesHandlers := handlers.NewRolesHandlers(parserAdapters, httpAdapters, rolesServices)
 	permissionsHandlers := handlers.NewPermissionsHandler(parserAdapters, httpAdapters, permissionsServices)
+
+	// Create system roles
+	if err := rolesServices.CreateSystemRole(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Create system roles permissions
+	if err := permissionsServices.CreateSystemPermissions(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Create system user
+	if err := userServices.CreateSystemUser(); err != nil {
+		log.Fatal(err)
+	}
 
 	// apis
 	api := app.Group("/api")
