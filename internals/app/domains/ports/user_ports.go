@@ -112,4 +112,7 @@ type UserServices interface {
 	//
 	// Return type: error.
 	DeleteAllSessions(c *fiber.Ctx, id uint) error
+
+	// CrateSystemUser creates a new system user in the database.
+	CreateSystemUser() error
 }

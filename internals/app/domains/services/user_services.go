@@ -1,8 +1,10 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/ports"
@@ -13,14 +15,16 @@ import (
 )
 
 type UserServices struct {
-	db    *gorm.DB
-	cache ports.CacheAdapters
+	db           *gorm.DB
+	cache        ports.CacheAdapters
+	roleServices ports.RolesServices
 }
 
-func NewUserServices(db *gorm.DB, cache ports.CacheAdapters) *UserServices {
+func NewUserServices(db *gorm.DB, cache ports.CacheAdapters, roleServices ports.RolesServices) *UserServices {
 	return &UserServices{
-		db:    db,
-		cache: cache,
+		db:           db,
+		cache:        cache,
+		roleServices: roleServices,
 	}
 }
 
@@ -189,6 +193,71 @@ func (u *UserServices) DeleteAllSessions(c *fiber.Ctx, id uint) error {
 	if err := u.cache.DelCacheMultiple(&session); err != nil {
 		log.Printf("@DeleteAllSessions: Error removing session: %v", err)
 		return err
+	}
+
+	return nil
+}
+
+func (u *UserServices) CreateSystemUser() error {
+	email := os.Getenv("SYS_USER_EMAIL")
+	password := os.Getenv("SYS_USER_PWD")
+	roleName := os.Getenv("SYS_ROLE_NAME")
+
+	if email == "" || password == "" || roleName == "" {
+		log.Fatal("SYS_USER_EMAIL, SYS_USER_PWD or SYS_ROLE_NAME not found in .env file")
+		return errors.New("SYS_USER_EMAIL, SYS_USER_PWD or SYS_ROLE_NAME not found in .env file")
+	}
+
+	// Get system role
+	role, err := u.roleServices.GetRoleByName(roleName)
+	if err != nil {
+		log.Fatal("Error getting system role: ", err)
+		return err
+	}
+
+	// check if user exists
+	var user_count int64
+	err = u.db.Model(&entities.User{}).Where("email = ?", email).Count(&user_count).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Fatal("Error checking user existence: ", err)
+		return err
+	}
+
+	if user_count == 0 {
+		// start transaction
+		tx := u.db.Begin()
+		if tx.Error != nil {
+			log.Fatal("Error starting transaction: ", tx.Error)
+			return tx.Error
+		}
+
+		// Encrypt password
+		hash, err := u.EcnrypPassword(password)
+		if err != nil {
+			tx.Rollback()
+			log.Fatal("Error encrypting password: ", err)
+			return err
+		}
+
+		// create user
+		user := entities.User{
+			Name:     "system",
+			Surname:  "user",
+			Email:    email,
+			Password: hash,
+			RoleID:   role.ID,
+		}
+		if err := tx.Create(&user).Error; err != nil {
+			tx.Rollback()
+			log.Fatal("Error creating user: ", err)
+			return err
+		}
+
+		// commit transaction
+		if err := tx.Commit().Error; err != nil {
+			log.Fatal("Error committing transaction: ", err)
+			return err
+		}
 	}
 
 	return nil
