@@ -8,7 +8,7 @@ func (r *Routes) RegisterRolesRoutes() {
 	r.protectedRoutes.Delete("/roles/:id", r.roleHandlers.DeleteRole)
 
 	r.protectedRoutes.Post("/roles/:id/permissions", r.permissionHandlers.CreatePermission)
-	r.protectedRoutes.Get("/roles/:id/permissions", r.roleHandlers.GerRolePermissions)
+	r.protectedRoutes.Get("/roles/:id/permissions", r.roleHandlers.GetRolePermissions)
 	r.protectedRoutes.Put("/roles/permissions/:perm_id", r.permissionHandlers.UpdatePermission)
 	r.protectedRoutes.Delete("/roles/permissions/:perm_id", r.permissionHandlers.DeletePermission)
 }

@@ -73,8 +73,8 @@ func (h *RolesHandlers) GetRole(c *fiber.Ctx) error {
 	return h.http.Success(c, []interface{}{role}, "Ruolo recuperato")
 }
 
-// GerRolePermissions handles the retrieval of the permissions of a role by its ID.
-func (h *RolesHandlers) GerRolePermissions(c *fiber.Ctx) error {
+// GetRolePermissions handles the retrieval of the permissions of a role by its ID.
+func (h *RolesHandlers) GetRolePermissions(c *fiber.Ctx) error {
 	id := utils.GetUintParam(c, "id")
 
 	if id == 0 {
