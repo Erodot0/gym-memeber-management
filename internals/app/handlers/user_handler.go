@@ -77,12 +77,12 @@ func (h *UserHandlers) Login(c *fiber.Ctx) error {
 	//Search for user
 	user, err := h.user.GetUserByEmail(credentials.Email)
 	if err != nil {
-		return h.http.Unauthorized(c)
+		return h.http.Unauthorized(c, "Email non trovata")
 	}
 
 	//Compare Password
 	if err := h.user.ComparePassword(user.ID, credentials.Password); err != nil {
-		return h.http.Unauthorized(c)
+		return h.http.Unauthorized(c, "Password errata")
 	}
 
 	//Create Session

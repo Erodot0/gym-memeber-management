@@ -27,27 +27,27 @@ func (m *UserMiddlewares) AuthorizeUser(c *fiber.Ctx) error {
 	authorization := c.Cookies("Authorization")
 	if authorization == "" {
 		// Send Unauthorized response
-		return m.http.Unauthorized(c)
+		return m.http.Forbidden(c)
 	}
 
 	// Get session from Redis
 	session, err := m.userService.GetSessionByToken(authorization)
 	if err != nil {
 		log.Printf("@AuthorizeUser: Error getting session: %v", err)
-		return m.http.Unauthorized(c)
+		return m.http.Forbidden(c)
 	}
 
 	// Check if it is the same IP and user agent
 	if session.IPAddress != c.IP() || session.UserAgent != c.Get("User-Agent") {
 		log.Printf("@AuthorizeUser: Session IP/User-Agent mismatch: %v", err)
-		return m.http.Unauthorized(c)
+		return m.http.Forbidden(c)
 	}
 
 	// Get user
 	user, err := m.userService.GetUserForLogin(session.UserID)
 	if err != nil {
 		log.Printf("@AuthorizeUser: Error getting user: %v", err)
-		return m.http.Unauthorized(c)
+		return m.http.Forbidden(c)
 	}
 
 	// Set session

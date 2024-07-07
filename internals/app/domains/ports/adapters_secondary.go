@@ -16,7 +16,7 @@ type HttpAdapters interface {
 	BadRequest(c *fiber.Ctx, message string) error
 
 	// 401 unauthorized
-	Unauthorized(c *fiber.Ctx) error
+	Unauthorized(c *fiber.Ctx, message string) error
 
 	// 403 forbidden
 	Forbidden(c *fiber.Ctx) error

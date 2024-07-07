@@ -7,8 +7,8 @@ import (
 type HttpServices struct{}
 
 type Response struct {
-	Success bool          `json:"success"`
-	Message string        `json:"message"`
+	Success bool        `json:"success"`
+	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
@@ -34,10 +34,17 @@ func (h *HttpServices) BadRequest(c *fiber.Ctx, message string) error {
 }
 
 // 401 Unauthorized
-func (h *HttpServices) Unauthorized(c *fiber.Ctx) error {
+func (h *HttpServices) Unauthorized(c *fiber.Ctx, text string) error {
+	message := "Unauthorized, please login first"
+
+	// Set custom message
+	if text != "" {
+		message = text
+	}
+
 	return c.Status(fiber.StatusUnauthorized).JSON(Response{
 		Success: false,
-		Message: "Unauthorized, please login first",
+		Message: message,
 	})
 }
 
