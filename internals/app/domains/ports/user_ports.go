@@ -95,6 +95,15 @@ type UserServices interface {
 	// Return type: error.
 	SetSession(c *fiber.Ctx, user *entities.User) error
 
+	// SetMobileSession sets a mobile session for a user in the database.
+	//
+	// Parameters:
+	//   - c: the fiber.Ctx object representing the HTTP request context.
+	//   - user: the user entity for which the session is being set.
+	//
+	// Return type: *entities.Tokens, error.
+	SetMobileSession(c *fiber.Ctx, user *entities.User) (*entities.Tokens, error)
+
 	// GetSessionByToken retrieves a session from the database by its token.
 	//
 	// Parameters:

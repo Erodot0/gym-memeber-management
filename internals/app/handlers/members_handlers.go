@@ -41,7 +41,7 @@ func (h *MembersHandlers) CreateMember(c *fiber.Ctx) error {
 		return h.http.InternalServerError(c, "Errore nel creare il membro")
 	}
 
-	return h.http.Success(c, []interface{}{member}, "Membro aggiunto!")
+	return h.http.Success(c, []interface{}{member}, "Membro aggiunto!", nil)
 }
 
 // UpdateMember updates a member in the database.
@@ -59,7 +59,7 @@ func (h *MembersHandlers) UpdateMember(c *fiber.Ctx) error {
 		return h.http.InternalServerError(c, "Errore nell'aggiornare il membro")
 	}
 
-	return h.http.Success(c, []interface{}{updatedMember}, "Membro aggiornato")
+	return h.http.Success(c, []interface{}{updatedMember}, "Membro aggiornato", nil)
 }
 
 // GetMembers retrieves all members from the database.
@@ -69,7 +69,7 @@ func (h *MembersHandlers) GetMembers(c *fiber.Ctx) error {
 		return h.http.InternalServerError(c, "Errore nel recuperare i membri")
 	}
 
-	return h.http.Success(c, members, "Membri recuperati")
+	return h.http.Success(c, members, "Membri recuperati", nil)
 }
 
 // GetMemberById retrieves a member by their ID from the database.
@@ -77,7 +77,7 @@ func (h *MembersHandlers) GetMemberById(c *fiber.Ctx) error {
 	// Get member from fiber locals
 	member := utils.GetLocalMember(c)
 
-	return h.http.Success(c, []interface{}{member}, "Membro recuperato")
+	return h.http.Success(c, []interface{}{member}, "Membro recuperato", nil)
 }
 
 // DeleteMember deletes a member from the database.
@@ -90,7 +90,7 @@ func (h *MembersHandlers) DeleteMember(c *fiber.Ctx) error {
 		return h.http.InternalServerError(c, "Errore nel eliminare il membro")
 	}
 
-	return h.http.Success(c, nil, "Membro eliminato")
+	return h.http.Success(c, nil, "Membro eliminato", nil)
 }
 
 // CreateMemberSubscription handles the creation of a new member subscription.
@@ -115,7 +115,7 @@ func (h *MembersHandlers) CreateMemberSubscription(c *fiber.Ctx) error {
 		return h.http.InternalServerError(c, "Errore nel creare l'iscrizione")
 	}
 
-	return h.http.Success(c, subscription, "Iscrizione creata")
+	return h.http.Success(c, subscription, "Iscrizione creata", nil)
 }
 
 // GetMemberSubscriptions retrieves all member subscriptions from the database.
@@ -129,7 +129,7 @@ func (h *MembersHandlers) GetMemberSubscriptions(c *fiber.Ctx) error {
 		return h.http.NotFound(c, "Membros non trovato")
 	}
 
-	return h.http.Success(c, subscriptions, "Iscrizioni recuperate")
+	return h.http.Success(c, subscriptions, "Iscrizioni recuperate", nil)
 }
 
 // GetMemberSubscriptionById retrieves a member subscription by their ID from the database.
@@ -144,7 +144,7 @@ func (h *MembersHandlers) GetMemberSubscriptionById(c *fiber.Ctx) error {
 		return h.http.NotFound(c, "Iscrizione non trovata")
 	}
 
-	return h.http.Success(c, subscription, "Iscrizione recuperata")
+	return h.http.Success(c, subscription, "Iscrizione recuperata", nil)
 }
 
 // UpdateMemberSubscription updates a member subscription in the database.
@@ -171,7 +171,7 @@ func (h *MembersHandlers) UpdateMemberSubscription(c *fiber.Ctx) error {
 		return h.http.NotFound(c, "Iscrizione non trovata")
 	}
 
-	return h.http.Success(c, updatedSub, "Iscrizione aggiornata")
+	return h.http.Success(c, updatedSub, "Iscrizione aggiornata", nil)
 }
 
 // DeleteMemberSubscription deletes a member subscription from the database.
@@ -195,5 +195,5 @@ func (h *MembersHandlers) DeleteMemberSubscription(c *fiber.Ctx) error {
 		return h.http.NotFound(c, "Iscrizione non trovata")
 	}
 
-	return h.http.Success(c, nil, "Iscrizione eliminata")
+	return h.http.Success(c, nil, "Iscrizione eliminata", nil)
 }

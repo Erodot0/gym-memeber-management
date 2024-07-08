@@ -1,15 +1,17 @@
 package adapters
 
 import (
+	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 	"github.com/gofiber/fiber/v2"
 )
 
 type HttpServices struct{}
 
 type Response struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
+	Success bool             `json:"success"`
+	Message string           `json:"message"`
+	Data    interface{}      `json:"data,omitempty"`
+	Tokens  *entities.Tokens `json:"tokens,omitempty"`
 }
 
 func NewHttpServices() *HttpServices {
@@ -17,11 +19,12 @@ func NewHttpServices() *HttpServices {
 }
 
 // 200 OK
-func (h *HttpServices) Success(c *fiber.Ctx, data interface{}, message string) error {
+func (h *HttpServices) Success(c *fiber.Ctx, data interface{}, message string, tokens *entities.Tokens) error {
 	return c.Status(fiber.StatusOK).JSON(Response{
 		Success: true,
 		Data:    data,
 		Message: message,
+		Tokens:  tokens,
 	})
 }
 

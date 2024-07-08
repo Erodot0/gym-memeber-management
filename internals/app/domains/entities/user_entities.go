@@ -21,6 +21,7 @@ type User struct {
 type UserLogin struct {
 	Email    string `json:"email" gorm:"unique;not null;index"`
 	Password string `json:"password" gorm:"not null"`
+	Device   string `json:"device" gorm:"not null"`
 }
 
 type UpdateUser struct {
@@ -57,6 +58,11 @@ func (u *UserLogin) Validate() error {
 	//Check the password
 	if u.Password == "" {
 		return fmt.Errorf("la password è obbligatoria")
+	}
+
+	//Check the device
+	if u.Device != "browser" && u.Device != "mobile" {
+		return fmt.Errorf("il dispositivo è obbligatorio")
 	}
 
 	return nil

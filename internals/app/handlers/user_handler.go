@@ -59,12 +59,13 @@ func (h *UserHandlers) CreateUser(c *fiber.Ctx) error {
 	}
 
 	user.RemovePassword()
-	return h.http.Success(c, []interface{}{user}, "User created")
+	return h.http.Success(c, []interface{}{user}, "User created", nil)
 }
 
 // Login handles the login process for a user.
 func (h *UserHandlers) Login(c *fiber.Ctx) error {
 	credentials := new(entities.UserLogin)
+	tokens := new(entities.Tokens)
 	if err := h.parser.ParseData(c, credentials); err != nil {
 		return h.http.BadRequest(c, "Errore nella gestione dei dati")
 	}
@@ -85,12 +86,20 @@ func (h *UserHandlers) Login(c *fiber.Ctx) error {
 		return h.http.Unauthorized(c, "Password errata")
 	}
 
-	//Create Session
-	if err := h.user.SetSession(c, user); err != nil {
-		return h.http.InternalServerError(c, "Error creating session")
+	if credentials.Device == "browser" {
+		//Create Session
+		if err := h.user.SetSession(c, user); err != nil {
+			return h.http.InternalServerError(c, "Error creating session")
+		}
+	} else {
+		//Create Mobile Session
+		tokens, err = h.user.SetMobileSession(c, user)
+		if err != nil {
+			return h.http.InternalServerError(c, "Error creating mobile session")
+		}
 	}
 
-	return h.http.Success(c, []interface{}{user}, "Login successful")
+	return h.http.Success(c, []interface{}{user}, "Login successful", tokens)
 }
 
 // Logout handles the logout process for a user.
@@ -104,7 +113,7 @@ func (h *UserHandlers) Logout(c *fiber.Ctx) error {
 	// Clear the cookie
 	c.ClearCookie("Authorization")
 
-	return h.http.Success(c, nil, "Logout successful")
+	return h.http.Success(c, nil, "Logout successful", nil)
 }
 
 // GetUsers handles the retrieval of all users.
@@ -113,7 +122,7 @@ func (u *UserHandlers) GetUsers(c *fiber.Ctx) error {
 	if err != nil {
 		return u.http.InternalServerError(c, err.Error())
 	}
-	return u.http.Success(c, users, "Utenti recuperati correttamente")
+	return u.http.Success(c, users, "Utenti recuperati correttamente", nil)
 }
 
 // UpdateUser handles the update of a user.
@@ -153,7 +162,7 @@ func (u *UserHandlers) UpdateUser(c *fiber.Ctx) error {
 		return u.http.InternalServerError(c, err.Error())
 	}
 
-	return u.http.Success(c, []interface{}{user}, "User updated")
+	return u.http.Success(c, []interface{}{user}, "User updated", nil)
 }
 
 // DeleteUser handles the deletion of a user.
@@ -185,5 +194,5 @@ func (u *UserHandlers) DeleteUser(c *fiber.Ctx) error {
 		return u.http.InternalServerError(c, err.Error())
 	}
 
-	return u.http.Success(c, nil, "Utente eliminato!")
+	return u.http.Success(c, nil, "Utente eliminato!", nil)
 }
