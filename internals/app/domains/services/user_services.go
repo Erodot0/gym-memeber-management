@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 	"github.com/Erodot0/gym-memeber-management/internals/app/domains/ports"
@@ -151,30 +150,6 @@ func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
 	c.Cookie(user.NewAuthCookie(token))
 
 	return nil
-}
-
-func (u *UserServices) SetMobileSession(c *fiber.Ctx, user *entities.User) (*entities.Tokens, error) {
-	//Generate random token
-	token, err := utils.GenerateRandomToken(32)
-	if err != nil {
-		return nil, err
-	}
-
-	//Create session
-	session := user.NewSession(c, token)
-	session.Expires = 10000 * time.Hour
-
-	//Set session in cache
-	if err := u.cache.SetCache(&session); err != nil {
-		return nil, err
-	}
-
-	// Create an object with the token
-	Cookies := entities.Tokens{
-		Authorization: token,
-	}
-
-	return &Cookies, nil
 }
 
 func (u *UserServices) GetSessionByToken(token string) (*entities.Session, error) {

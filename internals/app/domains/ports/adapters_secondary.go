@@ -3,7 +3,6 @@ package ports
 import (
 	"time"
 
-	"github.com/Erodot0/gym-memeber-management/internals/app/domains/entities"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,8 +10,7 @@ import (
 type HttpAdapters interface {
 
 	// 200 ok response
-	//	Tokens **must** be used only for mobile app
-	Success(c *fiber.Ctx, data interface{}, message string, tokens *entities.Tokens) error
+	Success(c *fiber.Ctx, data interface{}, message string) error
 
 	// 400 bad request
 	BadRequest(c *fiber.Ctx, message string) error

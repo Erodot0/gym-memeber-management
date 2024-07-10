@@ -41,7 +41,7 @@ func (p *PermissionsHandler) CreatePermission(c *fiber.Ctx) error {
 		return p.http.InternalServerError(c, err.Error())
 	}
 
-	return p.http.Success(c, []interface{}{perm}, "Permesso creato", nil)
+	return p.http.Success(c, []interface{}{perm}, "Permesso creato")
 }
 
 // UpdatePermission handles the update of an existing permission.
@@ -71,7 +71,7 @@ func (p *PermissionsHandler) UpdatePermission(c *fiber.Ctx) error {
 		return p.http.InternalServerError(c, err.Error())
 	}
 
-	return p.http.Success(c, []interface{}{permission}, "Permesso aggiornato", nil)
+	return p.http.Success(c, []interface{}{permission}, "Permesso aggiornato")
 }
 
 // GetPermission handles the retrieval of a permission by its ID.
@@ -86,7 +86,7 @@ func (p *PermissionsHandler) GetPermission(c *fiber.Ctx) error {
 		return p.http.NotFound(c, "Permesso non trovato")
 	}
 
-	return p.http.Success(c, []interface{}{permission}, "Permesso recuperato", nil)
+	return p.http.Success(c, []interface{}{permission}, "Permesso recuperato")
 }
 
 // GetPermissions handles the retrieval of all permissions.
@@ -100,7 +100,7 @@ func (p *PermissionsHandler) GetPermissions(c *fiber.Ctx) error {
 		return p.http.NotFound(c, "Permessi non trovato")
 	}
 
-	return p.http.Success(c, permissions, "Permesso recuperato", nil)
+	return p.http.Success(c, permissions, "Permesso recuperato")
 }
 
 // DeletePermission handles the deletion of a permission by its ID.
@@ -121,5 +121,5 @@ func (p *PermissionsHandler) DeletePermission(c *fiber.Ctx) error {
 		return p.http.NotFound(c, "Permesso non trovato")
 	}
 
-	return p.http.Success(c, nil, "Permesso eliminato", nil)
+	return p.http.Success(c, nil, "Permesso eliminato")
 }

@@ -16,11 +16,6 @@ type Session struct {
 	Expires   time.Duration `json:"expires" gorm:"not null"`
 }
 
-type Tokens struct {
-	Authorization string `json:"Authorization"`
-	RefreshToken  string `json:"RefreshToken"`
-}
-
 func (s *Session) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, s)
 }

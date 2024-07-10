@@ -38,7 +38,7 @@ func (h *RolesHandlers) CreateRole(c *fiber.Ctx) error {
 		return h.http.InternalServerError(c, "Errore nel creare il ruolo")
 	}
 
-	return h.http.Success(c, []interface{}{role}, "Ruolo creato!", nil)
+	return h.http.Success(c, []interface{}{role}, "Ruolo creato!")
 }
 
 // GetAllRoles handles the retrieval of all roles.
@@ -53,7 +53,7 @@ func (h *RolesHandlers) GetAllRoles(c *fiber.Ctx) error {
 		return h.http.NotFound(c, "Ruoli non trovati")
 	}
 
-	return h.http.Success(c, roles, "Ruoli recuperati", nil)
+	return h.http.Success(c, roles, "Ruoli recuperati")
 }
 
 // GetRole handles the retrieval of a role by its ID.
@@ -70,7 +70,7 @@ func (h *RolesHandlers) GetRole(c *fiber.Ctx) error {
 		return h.http.NotFound(c, "Ruolo non trovato")
 	}
 
-	return h.http.Success(c, []interface{}{role}, "Ruolo recuperato", nil)
+	return h.http.Success(c, []interface{}{role}, "Ruolo recuperato")
 }
 
 // GetRolePermissions handles the retrieval of the permissions of a role by its ID.
@@ -87,7 +87,7 @@ func (h *RolesHandlers) GetRolePermissions(c *fiber.Ctx) error {
 		return h.http.NotFound(c, "Ruolo non trovato")
 	}
 
-	return h.http.Success(c, role, "Permessi recuperati", nil)
+	return h.http.Success(c, role, "Permessi recuperati")
 }
 
 // UpdateRole handles the update of a role.
@@ -114,7 +114,7 @@ func (h *RolesHandlers) UpdateRole(c *fiber.Ctx) error {
 		return h.http.NotFound(c, "Ruolo non trovato")
 	}
 
-	return h.http.Success(c, []interface{}{role}, "Ruolo aggiornato", nil)
+	return h.http.Success(c, []interface{}{role}, "Ruolo aggiornato")
 }
 
 // DeleteRole handles the deletion of a role.
@@ -136,5 +136,5 @@ func (h *RolesHandlers) DeleteRole(c *fiber.Ctx) error {
 		return h.http.NotFound(c, "Ruolo non trovato")
 	}
 
-	return h.http.Success(c, nil, "Ruolo eliminato", nil)
+	return h.http.Success(c, nil, "Ruolo eliminato")
 }
