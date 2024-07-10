@@ -27,6 +27,7 @@ func (m *UserMiddlewares) AuthorizeUser(c *fiber.Ctx) error {
 	authorization := c.Cookies("Authorization")
 	if authorization == "" {
 		// Send Unauthorized response
+		log.Printf("@AuthorizeUser: Authorization cookie not found")
 		return m.http.Forbidden(c)
 	}
 
@@ -69,6 +70,7 @@ func (m *UserMiddlewares) CheckPermissions(c *fiber.Ctx) error {
 	// get requested action
 	requestedAction, requestedTable := m.permissionsServices.GetRequestedActionAndTable(c)
 	if requestedAction == "" || requestedTable == "" {
+		log.Printf("@CheckPermissions: Requested action or table not found")
 		return m.http.Forbidden(c)
 	}
 
