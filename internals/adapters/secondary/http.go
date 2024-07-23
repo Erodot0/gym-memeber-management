@@ -7,7 +7,6 @@ import (
 type HttpServices struct{}
 
 type Response struct {
-	Success bool        `json:"success"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
 }
@@ -19,7 +18,6 @@ func NewHttpServices() *HttpServices {
 // 200 OK
 func (h *HttpServices) Success(c *fiber.Ctx, data interface{}, message string) error {
 	return c.Status(fiber.StatusOK).JSON(Response{
-		Success: true,
 		Data:    data,
 		Message: message,
 	})
@@ -28,7 +26,6 @@ func (h *HttpServices) Success(c *fiber.Ctx, data interface{}, message string) e
 // 400 Bad Request
 func (h *HttpServices) BadRequest(c *fiber.Ctx, message string) error {
 	return c.Status(fiber.StatusBadRequest).JSON(Response{
-		Success: false,
 		Message: message,
 	})
 }
@@ -43,7 +40,6 @@ func (h *HttpServices) Unauthorized(c *fiber.Ctx, text string) error {
 	}
 
 	return c.Status(fiber.StatusUnauthorized).JSON(Response{
-		Success: false,
 		Message: message,
 	})
 }
@@ -51,7 +47,6 @@ func (h *HttpServices) Unauthorized(c *fiber.Ctx, text string) error {
 // 403 Forbidden
 func (h *HttpServices) Forbidden(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusForbidden).JSON(Response{
-		Success: false,
 		Message: "Forbidden, you don't have permission to access this resource",
 	})
 }
@@ -59,7 +54,6 @@ func (h *HttpServices) Forbidden(c *fiber.Ctx) error {
 // 404 Not Found
 func (h *HttpServices) NotFound(c *fiber.Ctx, message string) error {
 	return c.Status(fiber.StatusNotFound).JSON(Response{
-		Success: false,
 		Message: message,
 	})
 }
@@ -67,7 +61,6 @@ func (h *HttpServices) NotFound(c *fiber.Ctx, message string) error {
 // 500 Internal Server Error
 func (h *HttpServices) InternalServerError(c *fiber.Ctx, message string) error {
 	return c.Status(fiber.StatusInternalServerError).JSON(Response{
-		Success: false,
 		Message: message,
 	})
 }
