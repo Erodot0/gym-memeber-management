@@ -3,12 +3,14 @@ package configs
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/go-redis/redis/v8"
 )
 
 func InitializeRedisClient() (*redis.Client, error) {
+	log.Println("Setting up Redis client...")
 	// Create a new Redis client with the specified options
 	client := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),

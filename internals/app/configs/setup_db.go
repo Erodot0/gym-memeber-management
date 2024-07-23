@@ -13,6 +13,7 @@ var (
 )
 
 func InitializeSQLite() (*gorm.DB, error) {
+	log.Println("Connecting to SQLite database")
 	var err error
 	if DB, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: false,

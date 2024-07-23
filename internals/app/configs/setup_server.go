@@ -11,6 +11,7 @@ import (
 
 // Initialize sets up and starts the Fiber server.
 func Initialize(db *gorm.DB, redis *redis.Client) {
+	log.Println("Setting up server...")
 	app := setupFiberApp()
 
 	newFiberLimiter(app)
@@ -25,4 +26,6 @@ func Initialize(db *gorm.DB, redis *redis.Client) {
 	if err := app.Listen(":" + os.Getenv("SERVER_PORT")); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
+
+	log.Printf("Server started on port %s", os.Getenv("SERVER_PORT"))
 }
