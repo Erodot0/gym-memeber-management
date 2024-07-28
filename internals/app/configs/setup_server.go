@@ -14,6 +14,7 @@ func Initialize(db *gorm.DB, redis *redis.Client) {
 	log.Println("Setting up server...")
 	app := setupFiberApp()
 
+	newFiberCors(app)
 	newFiberLimiter(app)
 
 	routes := routes.NewRoutes(app, db, redis)

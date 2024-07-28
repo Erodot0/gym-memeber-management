@@ -5,6 +5,7 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"time"
 )
@@ -15,6 +16,16 @@ func setupFiberApp() *fiber.App {
 		JSONEncoder: json.Marshal,
 		JSONDecoder: json.Unmarshal,
 	})
+}
+
+func newFiberCors(app *fiber.App) {
+	log.Println("Setting up CORS...")
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept",
+		AllowMethods: "GET, POST, HEAD, PUT, DELETE, PATCH",
+	}))
 }
 
 func newFiberLimiter(app *fiber.App) {
