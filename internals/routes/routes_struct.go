@@ -84,13 +84,6 @@ func NewRoutes(app *fiber.App, db *gorm.DB, cache *redis.Client) *Routes {
 	publicApi := v1.Group("/public")
 	protectedApi := v1.Group("/protected", userMiddlewares.AuthorizeUser, userMiddlewares.CheckPermissions)
 
-	// Set up custom 404 handler
-	app.Use(func(c *fiber.Ctx) error {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"message": "Endpoint not found",
-		})
-	})
-
 	return &Routes{
 		app:   app,
 		db:    db,
