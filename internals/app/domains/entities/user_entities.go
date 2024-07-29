@@ -81,7 +81,8 @@ func (u *User) NewAuthCookie(token string) *fiber.Cookie {
 		Name:     "Authorization",
 		Value:    token,
 		Expires:  time.Now().Add(10 * time.Hour), // 10 hours session
-		HTTPOnly: true,
+		//TODO: enable in production
+		//HTTPOnly: true,
 		Secure:   true,
 		SameSite: fiber.CookieSameSiteStrictMode,
 		Path:     "/",
