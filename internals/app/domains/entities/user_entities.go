@@ -84,6 +84,7 @@ func (u *User) NewAuthCookie(token string) *fiber.Cookie {
 		//TODO: enable in production
 		//HTTPOnly: true,
 		//Secure:   true,
+		Domain:   "localhost",
 		SameSite: fiber.CookieSameSiteStrictMode,
 		Path:     "/",
 	}
