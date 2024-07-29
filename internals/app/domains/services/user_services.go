@@ -133,7 +133,7 @@ func (s *UserServices) UpdateUser(id uint, u *entities.UpdateUser) (*entities.Us
 
 func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
 	//Generate random token
-	token, err := utils.GenerateRandomToken(32)
+	token, err := utils.GenerateRandomToken(64)
 	if err != nil {
 		return err
 	}
