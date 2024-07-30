@@ -83,7 +83,7 @@ func (u *User) NewAuthCookie(token string) *fiber.Cookie {
 		Expires:  time.Now().Add(10 * time.Hour), // 10 hours session
 		HTTPOnly: true, //
 		Secure:   false, // Ensure this is false in development (HTTP)
-		SameSite: "",
+		SameSite: "None",
 		Path:     "/",
 	}
 }
