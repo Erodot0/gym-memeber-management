@@ -102,7 +102,7 @@ func (h *UserHandlers) Logout(c *fiber.Ctx) error {
 	}
 
 	// Clear the cookie
-	c.ClearCookie("Authorization")
+	c.Cookie(user.RemoveAuthCookie())
 
 	return h.http.Success(c, nil, "Logout successful")
 }

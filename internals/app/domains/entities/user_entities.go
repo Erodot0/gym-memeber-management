@@ -87,3 +87,15 @@ func (u *User) NewAuthCookie(token string) *fiber.Cookie {
 		Path:     "/",
 	}
 }
+
+func (u *User) RemoveAuthCookie() *fiber.Cookie {
+	return &fiber.Cookie{
+		Name:     "Authorization",
+		Value:    "",
+		Expires:  time.Now(),
+		HTTPOnly: true, //
+		Secure:   false, // Ensure this is false in development (HTTP)
+		SameSite: "None",
+		Path:     "/",
+	}
+}
