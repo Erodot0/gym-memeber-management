@@ -2,12 +2,14 @@ package configs
 
 import (
 	"log"
+	"os"
+
+	"time"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
-	"time"
 )
 
 func setupFiberApp() *fiber.App {
@@ -22,7 +24,7 @@ func newFiberCors(app *fiber.App) {
 	log.Println("Setting up CORS...")
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000, http://192.168.1.62:3001",
+		AllowOrigins: os.Getenv("ALLOW_ORIGINS"),
 		AllowHeaders: "Origin, Content-Type, Accept",
 		AllowMethods: "GET, POST, HEAD, PUT, DELETE, PATCH",
 		AllowCredentials: true,
