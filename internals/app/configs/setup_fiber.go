@@ -22,7 +22,7 @@ func newFiberCors(app *fiber.App) {
 	log.Println("Setting up CORS...")
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000",
+		AllowOrigins: "http://localhost:3000, http://192.168.1.62:3001",
 		AllowHeaders: "Origin, Content-Type, Accept",
 		AllowMethods: "GET, POST, HEAD, PUT, DELETE, PATCH",
 		AllowCredentials: true,
