@@ -72,7 +72,7 @@ func (u *User) NewSession(c *fiber.Ctx, token string) Session {
 		UserID:    u.ID,
 		IPAddress: c.IP(),
 		UserAgent: c.Get("user-agent"),
-		Expires:   10 * time.Hour, // 10 hours session
+		Expires:   time.Hour * 24 * 7, // 7 days
 	}
 }
 
@@ -80,7 +80,7 @@ func (u *User) NewRefreshCookie(token string) *fiber.Cookie {
 	return &fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    token,
-		Expires:  time.Now().Add(10 * time.Hour), // 10 hours session
+		Expires:  time.Now().Add(time.Hour * 24 * 7), // 7 days
 		HTTPOnly: true,
 		Secure:   false, // Ensure this is false in development (HTTP)
 		SameSite: fiber.CookieSameSiteLaxMode,
@@ -93,8 +93,58 @@ func (u *User) RemoveAuthCookie() *fiber.Cookie {
 		Name:     "refresh_token",
 		Value:    "",
 		Expires:  time.Now(),
-		HTTPOnly: true,  //
+		HTTPOnly: true,
 		Secure:   false, // Ensure this is false in development (HTTP)
+		SameSite: "None",
+		Path:     "/",
+	}
+}
+
+func (u *User) NewSessionCookie(token string) *fiber.Cookie {
+	return &fiber.Cookie{
+		Name:     "session_token",
+		Value:    token,
+		Expires:  time.Now().Add(1 * time.Hour), // 1 hours session
+		HTTPOnly: true,
+		Secure:   false, // Ensure this is false in development (HTTP)
+		SameSite: "None",
+		Path:     "/",
+	}
+}
+
+func (u *User) RemoveSessionCookie() *fiber.Cookie {
+	return &fiber.Cookie{
+		Name:     "session_token",
+		Value:    "",
+		Expires:  time.Now(),
+		HTTPOnly: true,
+		Secure:   false, // Ensure this is false in development (HTTP)
+		SameSite: "None",
+		Path:     "/",
+	}
+}
+
+// flag only for front end to know if user is logged in,
+// same expires time as refresh token
+func (u *User) NewLoginCookie() *fiber.Cookie {
+	return &fiber.Cookie{
+		Name:     "login_token",
+		Value:    "true",
+		Expires:  time.Now().Add(time.Hour * 24 * 7), // 7 days
+		HTTPOnly: false,
+		Secure:   false,
+		SameSite: "None",
+		Path:     "/",
+	}
+}
+
+func (u *User) RemoveloginCookie() *fiber.Cookie {
+	return &fiber.Cookie{
+		Name:     "login_token",
+		Value:    "",
+		Expires:  time.Now(),
+		HTTPOnly: false,
+		Secure:   false,
 		SameSite: "None",
 		Path:     "/",
 	}
