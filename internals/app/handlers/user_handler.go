@@ -101,9 +101,6 @@ func (h *UserHandlers) Logout(c *fiber.Ctx) error {
 		return h.http.InternalServerError(c, "Error deleting session")
 	}
 
-	// Clear the cookie
-	c.Cookie(user.RemoveAuthCookie())
-
 	return h.http.Success(c, nil, "Logout successful")
 }
 

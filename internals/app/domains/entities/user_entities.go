@@ -66,13 +66,23 @@ func (u *User) RemovePassword() {
 	u.Password = ""
 }
 
-func (u *User) NewSession(c *fiber.Ctx, token string) Session {
+func (u *User) NewRefreshToken(c *fiber.Ctx, token string) Session {
 	return Session{
 		Token:     token,
 		UserID:    u.ID,
 		IPAddress: c.IP(),
 		UserAgent: c.Get("user-agent"),
 		Expires:   time.Hour * 24 * 7, // 7 days
+	}
+}
+
+func (u *User) NewSessionToken(c *fiber.Ctx, token string) Session {
+	return Session{
+		Token:     token,
+		UserID:    u.ID,
+		IPAddress: c.IP(),
+		UserAgent: c.Get("user-agent"),
+		Expires:   time.Hour * 1, // 1 hour
 	}
 }
 

@@ -132,22 +132,33 @@ func (s *UserServices) UpdateUser(id uint, u *entities.UpdateUser) (*entities.Us
 }
 
 func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
-	//Generate random token
-	token, err := utils.GenerateRandomToken(64)
+	//Generate random refresh token
+	refresh_token, err := utils.GenerateRandomToken(64)
+	if err != nil {
+		return err
+	}
+	//Generate random session token
+	session_token, err := utils.GenerateRandomToken(32)
 	if err != nil {
 		return err
 	}
 
-	//Create session
-	session := user.NewSession(c, token)
-
-	//Set session in cache
-	if err := s.cache.SetCache(&session); err != nil {
+	//Create refresh token and set it in cache
+	refresh_cache := user.NewRefreshToken(c, refresh_token)
+	if err := s.cache.SetCache(&refresh_cache); err != nil {
 		return err
 	}
 
-	//Set cookie
-	c.Cookie(user.NewRefreshCookie(token))
+	//Create session token and set it in cache
+	session_cache := user.NewSessionToken(c, session_token)
+	if err := s.cache.SetCache(&session_cache); err != nil {
+		return err
+	}
+
+	//Set cookies
+	c.Cookie(user.NewRefreshCookie(refresh_token))
+	c.Cookie(user.NewSessionCookie(session_token))
+	c.Cookie(user.NewLoginCookie())
 
 	return nil
 }
@@ -195,7 +206,10 @@ func (u *UserServices) DeleteSession(c *fiber.Ctx, id uint) error {
 	}
 
 	// Clear the cookie
-	c.ClearCookie("refresh_token")
+	user := entities.User{}
+	c.Cookie(user.RemoveRefreshCookie())
+	c.Cookie(user.RemoveSessionCookie())
+	c.Cookie(user.RemoveloginCookie())
 	return nil
 }
 
