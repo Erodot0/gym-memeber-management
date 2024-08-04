@@ -105,6 +105,27 @@ type UserServices interface {
 	//   - error: an error if the retrieval process encounters any issues.
 	GetSessionByToken(token string) (*entities.Session, error)
 
+	// GetUserFromSession retrieves a user from the database by its session token.
+	//
+	// Parameters:
+	//   - c: the fiber.Ctx object representing the HTTP request context.
+	//   - token: the session token of the user to retrieve.
+	//
+	// Returns:
+	//   - *entities.User: the user with the given session token, or nil if not found.
+	//   - error: an error if the retrieval process encounters any issues.
+	GetUserFromSession(c *fiber.Ctx, token string) (*entities.User, error)
+
+
+	// RefreshUserSession refreshes a user session in the database by its ID.
+	//
+	// Parameters:
+	//   - c: the fiber.Ctx object representing the HTTP request context.
+	//   - user: the user entity for which the session is being refreshed.
+	//
+	// Return type: error.
+	RefreshUserSession(c *fiber.Ctx, user *entities.User) error
+
 	// DeleteSession deletes a user session from the database by its ID.
 	//
 	// Parameters:

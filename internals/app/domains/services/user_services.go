@@ -131,7 +131,7 @@ func (s *UserServices) UpdateUser(id uint, u *entities.UpdateUser) (*entities.Us
 	return user, nil
 }
 
-func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
+func (u *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
 	//Generate random refresh token
 	refresh_token, err := utils.GenerateRandomToken(64)
 	if err != nil {
@@ -145,13 +145,13 @@ func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
 
 	//Create refresh token and set it in cache
 	refresh_cache := user.NewRefreshToken(c, refresh_token)
-	if err := s.cache.SetCache(&refresh_cache); err != nil {
+	if err := u.cache.SetCache(&refresh_cache); err != nil {
 		return err
 	}
 
 	//Create session token and set it in cache
 	session_cache := user.NewSessionToken(c, session_token)
-	if err := s.cache.SetCache(&session_cache); err != nil {
+	if err := u.cache.SetCache(&session_cache); err != nil {
 		return err
 	}
 
@@ -189,6 +189,47 @@ func (u *UserServices) GetSessionByToken(token string) (*entities.Session, error
 	}
 
 	return session, nil
+}
+
+func (u *UserServices) GetUserFromSession(c *fiber.Ctx, token string) (*entities.User, error) {
+	// Get session from Redis
+	session, err := u.GetSessionByToken(token)
+	if err != nil {
+		log.Printf("@GetUserFromSession: Error getting session: %v", err)
+		return nil, err
+	}
+
+	// Check if it is the same IP and user agent
+	if session.IPAddress != c.IP() || session.UserAgent != c.Get("User-Agent") {
+		log.Printf("@GetUserFromSession: Session IP/User-Agent mismatch: %v", err)
+		return nil, err
+	}
+
+	// Get user
+	user, err := u.GetUserForLogin(session.UserID)
+	if err != nil {
+		log.Printf("@GetUserFromSession: Error getting user: %v", err)
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (u *UserServices) RefreshUserSession(c *fiber.Ctx, user *entities.User) error {
+	//Generate random session token
+	session_token, err := utils.GenerateRandomToken(32)
+	if err != nil {
+		return err
+	}
+
+	//Create session token and set it in cache
+	session_cache := user.NewSessionToken(c, session_token)
+	if err := u.cache.SetCache(&session_cache); err != nil {
+		return err
+	}
+
+	c.Cookie(user.NewSessionCookie(session_token))
+	return nil
 }
 
 func (u *UserServices) DeleteSession(c *fiber.Ctx, id uint) error {
