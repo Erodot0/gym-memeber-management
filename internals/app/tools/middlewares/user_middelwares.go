@@ -24,35 +24,19 @@ func NewUserMiddlewares(http ports.HttpAdapters, userService ports.UserServices,
 }
 
 func (m *UserMiddlewares) AuthorizeUser(c *fiber.Ctx) error {
-	refresh_token := c.Cookies("refresh_token")
-	if refresh_token == "" {
-		// Send Unauthorized response
-		log.Printf("@AuthorizeUser: refresh_token cookie not found")
-		return m.http.Forbidden(c)
+	session_token := c.Cookies("session_token")
+	if session_token == "" {
+		// check and refresh token
+		return m.CheckRefreshToken(c, true)
 	}
 
-	// Get session from Redis
-	session, err := m.userService.GetSessionByToken(refresh_token)
-	if err != nil {
-		log.Printf("@AuthorizeUser: Error getting session: %v", err)
-		return m.http.Forbidden(c)
-	}
-
-	// Check if it is the same IP and user agent
-	if session.IPAddress != c.IP() || session.UserAgent != c.Get("User-Agent") {
-		log.Printf("@AuthorizeUser: Session IP/User-Agent mismatch: %v", err)
-		return m.http.Forbidden(c)
-	}
-
-	// Get user
-	user, err := m.userService.GetUserForLogin(session.UserID)
+	user, err := m.userService.GetUserFromSession(c, session_token)
 	if err != nil {
 		log.Printf("@AuthorizeUser: Error getting user: %v", err)
 		return m.http.Forbidden(c)
 	}
 
-	// Set session
-	utils.SetLocals(c, "session", session)
+	// Set user and role in locals
 	utils.SetLocals(c, "user", user)
 	utils.SetLocals(c, "role", user.Role)
 	return c.Next()
@@ -99,5 +83,34 @@ func (m *UserMiddlewares) CheckPermissions(c *fiber.Ctx) error {
 
 	// Set permission
 	utils.SetLocals(c, "permission", permission)
+	return c.Next()
+}
+
+func (m *UserMiddlewares) CheckRefreshToken(c *fiber.Ctx, refreshSession bool) error {
+	refresh_token := c.Cookies("refresh_token")
+	if refresh_token == "" {
+		// Send Unauthorized response
+		log.Printf("@CheckRefreshToken: refresh_token cookie not found")
+		return m.http.BadRequest(c, "Cookie 'refresh_token' non trovato, rifare la login")
+	}
+
+	// Check for user related session
+	user, err := m.userService.GetUserFromSession(c, refresh_token)
+	if err != nil {
+		log.Printf("@AuthorizeUser: Error getting user: %v", err)
+		return m.http.Forbidden(c)
+	}
+
+	// refresh session
+	if refreshSession {
+		if err := m.userService.RefreshUserSession(c, user); err != nil {
+			log.Printf("@CheckRefreshToken: Error refreshing session: %v", err)
+			return m.http.InternalServerError(c, "Errore nella gestione della sessione")
+		}
+	}
+
+	// Set user and role in locals
+	utils.SetLocals(c, "user", user)
+	utils.SetLocals(c, "role", user.Role)
 	return c.Next()
 }
