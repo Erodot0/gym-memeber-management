@@ -24,14 +24,6 @@ func GetLocalUser(c *fiber.Ctx) *entities.User {
 	return c.Locals("user").(*entities.User)
 }
 
-// GetLocalSession retrieves the local session from the fiber context.
-//
-// Parameter: c *fiber.Ctx
-// Return type: *entities.Session
-func GetLocalSession(c *fiber.Ctx) *entities.Session {
-	return c.Locals("session").(*entities.Session)
-}
-
 // GetLocalMember retrieves the local member from the fiber context.
 //
 // Parameter: c *fiber.Ctx
