@@ -88,7 +88,7 @@ func (u *User) NewRefreshCookie(token string) *fiber.Cookie {
 	}
 }
 
-func (u *User) RemoveAuthCookie() *fiber.Cookie {
+func (u *User) RemoveRefreshCookie() *fiber.Cookie {
 	return &fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    "",
