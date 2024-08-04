@@ -147,7 +147,7 @@ func (s *UserServices) SetSession(c *fiber.Ctx, user *entities.User) error {
 	}
 
 	//Set cookie
-	c.Cookie(user.NewAuthCookie(token))
+	c.Cookie(user.NewRefreshCookie(token))
 
 	return nil
 }
@@ -181,8 +181,8 @@ func (u *UserServices) GetSessionByToken(token string) (*entities.Session, error
 }
 
 func (u *UserServices) DeleteSession(c *fiber.Ctx, id uint) error {
-	// Get authorization token and create session
-	token := c.Cookies("Authorization")
+	// Get refresh_token token and create session
+	token := c.Cookies("refresh_token")
 	session := entities.Session{
 		Token:  token,
 		UserID: id,
@@ -195,7 +195,7 @@ func (u *UserServices) DeleteSession(c *fiber.Ctx, id uint) error {
 	}
 
 	// Clear the cookie
-	c.ClearCookie("Authorization")
+	c.ClearCookie("refresh_token")
 	return nil
 }
 

@@ -76,9 +76,9 @@ func (u *User) NewSession(c *fiber.Ctx, token string) Session {
 	}
 }
 
-func (u *User) NewAuthCookie(token string) *fiber.Cookie {
+func (u *User) NewRefreshCookie(token string) *fiber.Cookie {
 	return &fiber.Cookie{
-		Name:     "Authorization",
+		Name:     "refresh_token",
 		Value:    token,
 		Expires:  time.Now().Add(10 * time.Hour), // 10 hours session
 		HTTPOnly: true,
@@ -90,10 +90,10 @@ func (u *User) NewAuthCookie(token string) *fiber.Cookie {
 
 func (u *User) RemoveAuthCookie() *fiber.Cookie {
 	return &fiber.Cookie{
-		Name:     "Authorization",
+		Name:     "refresh_token",
 		Value:    "",
 		Expires:  time.Now(),
-		HTTPOnly: true, //
+		HTTPOnly: true,  //
 		Secure:   false, // Ensure this is false in development (HTTP)
 		SameSite: "None",
 		Path:     "/",

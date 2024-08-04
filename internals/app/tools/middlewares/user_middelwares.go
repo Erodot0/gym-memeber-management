@@ -24,15 +24,15 @@ func NewUserMiddlewares(http ports.HttpAdapters, userService ports.UserServices,
 }
 
 func (m *UserMiddlewares) AuthorizeUser(c *fiber.Ctx) error {
-	authorization := c.Cookies("Authorization")
-	if authorization == "" {
+	refresh_token := c.Cookies("refresh_token")
+	if refresh_token == "" {
 		// Send Unauthorized response
-		log.Printf("@AuthorizeUser: Authorization cookie not found")
+		log.Printf("@AuthorizeUser: refresh_token cookie not found")
 		return m.http.Forbidden(c)
 	}
 
 	// Get session from Redis
-	session, err := m.userService.GetSessionByToken(authorization)
+	session, err := m.userService.GetSessionByToken(refresh_token)
 	if err != nil {
 		log.Printf("@AuthorizeUser: Error getting session: %v", err)
 		return m.http.Forbidden(c)
